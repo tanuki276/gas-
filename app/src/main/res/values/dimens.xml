@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 余白（Margin/Padding） -->
+    <dimen name="space_2">2dp</dimen>
+    <dimen name="space_4">4dp</dimen>
+    <dimen name="space_8">8dp</dimen>
+    <dimen name="space_12">12dp</dimen>
+    <dimen name="space_16">16dp</dimen>
+    <dimen name="space_24">24dp</dimen>
+    <dimen name="space_32">32dp</dimen>
+    <dimen name="space_48">48dp</dimen>
+    <dimen name="space_64">64dp</dimen>
+    
+    <!-- コンテンツ余白 -->
+    <dimen name="content_padding_horizontal">16dp</dimen>
+    <dimen name="content_padding_vertical">8dp</dimen>
+    <dimen name="screen_padding">16dp</dimen>
+    
+    <!-- 角丸半径 -->
+    <dimen name="corner_radius_small">4dp</dimen>
+    <dimen name="corner_radius_medium">8dp</dimen>
+    <dimen name="corner_radius_large">12dp</dimen>
+    <dimen name="corner_radius_xlarge">16dp</dimen>
+    <dimen name="corner_radius_round">24dp</dimen>
+    
+    <!-- エレベーション -->
+    <dimen name="elevation_none">0dp</dimen>
+    <dimen name="elevation_low">2dp</dimen>
+    <dimen name="elevation_medium">4dp</dimen>
+    <dimen name="elevation_high">8dp</dimen>
+    <dimen name="elevation_xhigh">16dp</dimen>
+    
+    <!-- アイコンサイズ -->
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="icon_size_large">32dp</dimen>
+    <dimen name="icon_size_xlarge">48dp</dimen>
+    <dimen name="icon_size_xxlarge">64dp</dimen>
+    
+    <!-- ボタンサイズ -->
+    <dimen name="button_height_small">36dp</dimen>
+    <dimen name="button_height_medium">48dp</dimen>
+    <dimen name="button_height_large">56dp</dimen>
+    <dimen name="button_min_width">64dp</dimen>
+    
+    <!-- カードサイズ -->
+    <dimen name="card_height_small">80dp</dimen>
+    <dimen name="card_height_medium">120dp</dimen>
+    <dimen name="card_height_large">160dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    
+    <!-- 画像サイズ -->
+    <dimen name="image_size_small">40dp</dimen>
+    <dimen name="image_size_medium">80dp</dimen>
+    <dimen name="image_size_large">120dp</dimen>
+    <dimen name="image_size_xlarge">160dp</dimen>
+    <dimen name="image_size_flag">24dp</dimen>
+    
+    <!-- アバターサイズ -->
+    <dimen name="avatar_size_small">32dp</dimen>
+    <dimen name="avatar_size_medium">48dp</dimen>
+    <dimen name="avatar_size_large">64dp</dimen>
+    
+    <!-- プログレスバー -->
+    <dimen name="progress_bar_height">4dp</dimen>
+    <dimen name="progress_bar_height_thick">8dp</dimen>
+    <dimen name="progress_bar_radius">12dp</dimen>
+    
+    <!-- チップサイズ -->
+    <dimen name="chip_height">32dp</dimen>
+    <dimen name="chip_min_width">64dp</dimen>
+    
+    <!-- タブサイズ -->
+    <dimen name="tab_height">48dp</dimen>
+    <dimen name="tab_padding_horizontal">12dp</dimen>
+    <dimen name="tab_indicator_height">3dp</dimen>
+    
+    <!-- 区切り線 -->
+    <dimen name="divider_height">1dp</dimen>
+    <dimen name="divider_height_thick">2dp</dimen>
+    
+    <!-- ツールバー -->
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="toolbar_elevation">4dp</dimen>
+    
+    <!-- ボトムナビゲーション -->
+    <dimen name="bottom_nav_height">56dp</dimen>
+    <dimen name="bottom_nav_icon_size">24dp</dimen>
+    
+    <!-- フローティングアクションボタン -->
+    <dimen name="fab_size_normal">56dp</dimen>
+    <dimen name="fab_size_mini">40dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    
+    <!-- ダイアログ -->
+    <dimen name="dialog_min_width">280dp</dimen>
+    <dimen name="dialog_max_width">560dp</dimen>
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="dialog_corner_radius">16dp</dimen>
+    
+    <!-- リストアイテム -->
+    <dimen name="list_item_height_small">48dp</dimen>
+    <dimen name="list_item_height_medium">64dp</dimen>
+    <dimen name="list_item_height_large">88dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    
+    <!-- グリッドアイテム -->
+    <dimen name="grid_spacing">8dp</dimen>
+    <dimen name="grid_item_size_small">80dp</dimen>
+    <dimen name="grid_item_size_medium">120dp</dimen>
+    <dimen name="grid_item_size_large">160dp</dimen>
+    
+    <!-- テキストサイズ -->
+    <dimen name="text_size_xsmall">10sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_xlarge">18sp</dimen>
+    <dimen name="text_size_xxlarge">20sp</dimen>
+    <dimen name="text_size_headline">24sp</dimen>
+    <dimen name="text_size_title">28sp</dimen>
+    
+    <!-- 行間 -->
+    <dimen name="line_height_tight">18sp</dimen>
+    <dimen name="line_height_normal">24sp</dimen>
+    <dimen name="line_height_loose">32sp</dimen>
+    <dimen name="line_spacing_small">2sp</dimen>
+    <dimen name="line_spacing_medium">4sp</dimen>
+    <dimen name="line_spacing_large">8sp</dimen>
+    
+    <!-- バッジサイズ -->
+    <dimen name="badge_size_small">16dp</dimen>
+    <dimen name="badge_size_medium">20dp</dimen>
+    <dimen name="badge_size_large">24dp</dimen>
+    
+    <!-- グラフサイズ -->
+    <dimen name="chart_height_small">120dp</dimen>
+    <dimen name="chart_height_medium">200dp</dimen>
+    <dimen name="chart_height_large">280dp</dimen>
+    
+    <!-- アニメーション継続時間 -->
+    <integer name="anim_duration_short">200</integer>
+    <integer name="anim_duration_medium">300</integer>
+    <integer name="anim_duration_long">500</integer>
+    <integer name="anim_duration_xlong">1000</integer>
+    
+    <!-- 境界線幅 -->
+    <dimen name="border_width_thin">1dp</dimen>
+    <dimen name="border_width_normal">2dp</dimen>
+    <dimen name="border_width_thick">4dp</dimen>
+    
+    <!-- シャドウ -->
+    <dimen name="shadow_radius_small">2dp</dimen>
+    <dimen name="shadow_radius_medium">4dp</dimen>
+    <dimen name="shadow_radius_large">8dp</dimen>
+    <dimen name="shadow_offset_x">0dp</dimen>
+    <dimen name="shadow_offset_y">2dp</dimen>
+    
+    <!-- スクロールバー -->
+    <dimen name="scrollbar_size">4dp</dimen>
+    <dimen name="scrollbar_margin">2dp</dimen>
+</resources>
