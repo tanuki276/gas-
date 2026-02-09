@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 地域リスト -->
+    <string-array name="regions">
+        <item>@string/region_china</item>
+        <item>@string/region_japan</item>
+        <item>@string/region_korea</item>
+        <item>@string/region_mongol</item>
+        <item>@string/region_vietnam</item>
+        <item>@string/region_cambodia</item>
+    </string-array>
+    
+    <string-array name="region_codes">
+        <item>china</item>
+        <item>japan</item>
+        <item>korea</item>
+        <item>mongol</item>
+        <item>vietnam</item>
+        <item>cambodia</item>
+    </string-array>
+    
+    <!-- 機能リスト -->
+    <string-array name="features">
+        <item>@string/feature_explanation</item>
+        <item>@string/feature_quiz</item>
+        <item>@string/feature_learning</item>
+        <item>@string/feature_search</item>
+        <item>@string/feature_test</item>
+    </string-array>
+    
+    <!-- 時代リスト -->
+    <string-array name="time_periods">
+        <item>古代</item>
+        <item>中世</item>
+        <item>近世</item>
+        <item>近代</item>
+        <item>現代</item>
+    </string-array>
+    
+    <!-- クイズ難易度 -->
+    <string-array name="quiz_difficulties">
+        <item>@string/difficulty_easy</item>
+        <item>@string/difficulty_medium</item>
+        <item>@string/difficulty_hard</item>
+    </string-array>
+    
+    <!-- 検索フィールド -->
+    <string-array name="search_fields">
+        <item>名前</item>
+        <item>特徴タグ</item>
+        <item>説明文</item>
+        <item>すべて</item>
+    </string-array>
+    
+    <!-- 文字サイズ -->
+    <string-array name="text_sizes">
+        <item>@string/text_size_small</item>
+        <item>@string/text_size_medium</item>
+        <item>@string/text_size_large</item>
+    </string-array>
+    
+    <!-- 言語選択 -->
+    <string-array name="languages">
+        <item>@string/language_japanese</item>
+        <item>@string/language_english</item>
+    </string-array>
+    
+    <!-- 学習モード -->
+    <string-array name="learning_modes">
+        <item>フラッシュカード</item>
+        <item>年表学習</item>
+        <item>比較学習</item>
+        <item>クイズ学習</item>
+    </string-array>
+    
+    <!-- テストカテゴリ -->
+    <string-array name="test_categories">
+        <item>総合テスト</item>
+        <item>時代別テスト</item>
+        <item>地域別テスト</item>
+        <item>実力診断テスト</item>
+    </string-array>
+    
+    <!-- 地域色配列 -->
+    <array name="region_colors">
+        <item>@color/region_china</item>
+        <item>@color/region_japan</item>
+        <item>@color/region_korea</item>
+        <item>@color/region_mongol</item>
+        <item>@color/region_vietnam</item>
+        <item>@color/region_cambodia</item>
+    </array>
+    
+    <!-- レベル色配列 -->
+    <array name="level_colors">
+        <item>@color/level_1</item>
+        <item>@color/level_2</item>
+        <item>@color/level_3</item>
+        <item>@color/level_4</item>
+        <item>@color/level_5</item>
+    </array>
+    
+    <!-- 実績色配列 -->
+    <array name="achievement_colors">
+        <item>@color/achievement_bronze</item>
+        <item>@color/achievement_silver</item>
+        <item>@color/achievement_gold</item>
+        <item>@color/achievement_platinum</item>
+    </array>
+    
+    <!-- デフォルトタグ -->
+    <string-array name="default_tags">
+        <item>統一王朝</item>
+        <item>分裂時代</item>
+        <item>短命王朝</item>
+        <item>外国勢力</item>
+        <item>地方政権</item>
+        <item>文化繁栄</item>
+        <item>軍事国家</item>
+        <item>貿易国家</item>
+    </string-array>
+</resources>
