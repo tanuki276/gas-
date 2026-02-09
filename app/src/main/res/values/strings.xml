@@ -1,4 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HelloWorld</string>
-    <string name="hello_world">Hello, World</string>
+    <!-- アプリ名と基本情報 -->
+    <string name="app_name">歴史マスター</string>
+    <string name="app_slogan">東アジアの歴史を楽しく学ぼう</string>
+    
+    <!-- 地域名 -->
+    <string name="region_china">中国</string>
+    <string name="region_japan">日本</string>
+    <string name="region_korea">韓国</string>
+    <string name="region_mongol">モンゴル</string>
+    <string name="region_vietnam">ベトナム</string>
+    <string name="region_cambodia">カンボジア</string>
+    
+    <!-- 機能名 -->
+    <string name="feature_explanation">解説</string>
+    <string name="feature_quiz">クイズ</string>
+    <string name="feature_learning">学習</string>
+    <string name="feature_search">検索</string>
+    <string name="feature_test">テスト</string>
+    
+    <!-- メイン画面 -->
+    <string name="welcome_message">歴史マスターへようこそ！</string>
+    <string name="select_region">地域を選択</string>
+    <string name="select_feature">機能を選択</string>
+    <string name="view_explanation">解説を見る</string>
+    <string name="take_quiz">クイズをする</string>
+    <string name="start_learning">学習する</string>
+    <string name="search_history">検索する</string>
+    <string name="take_test">テストを受ける</string>
+    
+    <!-- 解説画面 -->
+    <string name="explanation_title">歴史解説</string>
+    <string name="timeline_view">タイムライン表示</string>
+    <string name="period_detail">時代詳細</string>
+    <string name="show_more">もっと見る</string>
+    <string name="show_less">閉じる</string>
+    
+    <!-- クイズ画面 -->
+    <string name="quiz_title">歴史クイズ</string>
+    <string name="question_number">問題 %1$d/%2$d</string>
+    <string name="time_remaining">残り時間: %1$d秒</string>
+    <string name="score_display">スコア: %1$d</string>
+    <string name="submit_answer">回答する</string>
+    <string name="next_question">次へ</string>
+    <string name="finish_quiz">終了</string>
+    <string name="correct_answer">正解！</string>
+    <string name="incorrect_answer">不正解</string>
+    <string name="correct_answer_was">正解は: %1$s</string>
+    <string name="time_up">時間切れ！</string>
+    
+    <!-- 学習画面 -->
+    <string name="learning_title">学習モード</string>
+    <string name="learning_progress">進捗: %1$d%%</string>
+    <string name="start_learning_session">学習を始める</string>
+    <string name="continue_learning">続きから</string>
+    <string name="flashcards">フラッシュカード</string>
+    <string name="timeline_study">年表学習</string>
+    <string name="comparison_study">比較学習</string>
+    <string name="study_complete">学習完了！</string>
+    <string name="study_time">学習時間: %1$d分</string>
+    
+    <!-- 検索画面 -->
+    <string name="search_title">検索</string>
+    <string name="search_hint">王朝名、時代、特徴などを検索</string>
+    <string name="search_results">検索結果: %1$d件</string>
+    <string name="no_results">検索結果がありません</string>
+    <string name="search_history_title">検索履歴</string>
+    <string name="clear_history">履歴をクリア</string>
+    <string name="advanced_search">詳細検索</string>
+    
+    <!-- テスト画面 -->
+    <string name="test_title">実力テスト</string>
+    <string name="test_description">全20問の総合テストに挑戦しましょう</string>
+    <string name="start_test">テスト開始</string>
+    <string name="test_progress">%1$d/%2$d問</string>
+    <string name="test_time_limit">制限時間: 30分</string>
+    <string name="test_score">テスト結果: %1$d点</string>
+    <string name="test_passed">合格！</string>
+    <string name="test_failed">もう一度挑戦しましょう</string>
+    <string name="test_certificate">修了証</string>
+    
+    <!-- ダイアログメッセージ -->
+    <string name="confirm_exit">終了してもよろしいですか？</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+    <string name="delete">削除</string>
+    <string name="retry">再試行</string>
+    <string name="share">共有</string>
+    <string name="settings">設定</string>
+    
+    <!-- 設定項目 -->
+    <string name="settings_title">設定</string>
+    <string name="language_settings">言語設定</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_english">English</string>
+    <string name="dark_mode">ダークモード</string>
+    <string name="text_size">文字サイズ</string>
+    <string name="text_size_small">小</string>
+    <string name="text_size_medium">中</string>
+    <string name="text_size_large">大</string>
+    <string name="voice_guidance">音声ガイド</string>
+    <string name="vibration_feedback">振動フィードバック</string>
+    <string name="quiz_difficulty">クイズ難易度</string>
+    <string name="difficulty_easy">易しい</string>
+    <string name="difficulty_medium">普通</string>
+    <string name="difficulty_hard">難しい</string>
+    <string name="data_management">データ管理</string>
+    <string name="clear_cache">キャッシュをクリア</string>
+    <string name="export_data">データをエクスポート</string>
+    <string name="import_data">データをインポート</string>
+    
+    <!-- メニュー項目 -->
+    <string name="menu_home">ホーム</string>
+    <string name="menu_achievements">実績</string>
+    <string name="menu_statistics">統計</string>
+    <string name="menu_help">ヘルプ</string>
+    <string name="menu_about">アプリについて</string>
+    
+    <!-- エラーメッセージ -->
+    <string name="error_network">ネットワーク接続に失敗しました</string>
+    <string name="error_load_data">データの読み込みに失敗しました</string>
+    <string name="error_save_data">データの保存に失敗しました</string>
+    <string name="error_no_internet">インターネット接続がありません</string>
+    <string name="error_try_again">再度お試しください</string>
+    
+    <!-- 成功メッセージ -->
+    <string name="success_save">保存しました</string>
+    <string name="success_export">エクスポートしました</string>
+    <string name="success_import">インポートしました</string>
+    
+    <!-- 統計表示 -->
+    <string name="stats_total_quizzes">解答した問題数</string>
+    <string name="stats_correct_rate">正答率</string>
+    <string name="stats_study_time">学習時間</string>
+    <string name="stats_level">レベル</string>
+    <string name="stats_achievements">獲得した実績</string>
+    
+    <!-- チュートリアル -->
+    <string name="tutorial_welcome">歴史マスターへようこそ！</string>
+    <string name="tutorial_step1">地域を選択して歴史を学びましょう</string>
+    <string name="tutorial_step2">クイズで知識をテストしましょう</string>
+    <string name="tutorial_step3">学習モードで体系的に学びましょう</string>
+    <string name="tutorial_step4">検索で気になることを調べましょう</string>
+    <string name="tutorial_step5">テストで実力を確かめましょう</string>
+    <string name="tutorial_skip">スキップ</string>
+    <string name="tutorial_next">次へ</string>
+    <string name="tutorial_start">始める</string>
+    
+    <!-- 共有メッセージ -->
+    <string name="share_quiz_result">歴史クイズで%1$d点を獲得しました！ #歴史マスター</string>
+    <string name="share_achievement">実績「%1$s」を獲得しました！ #歴史マスター</string>
+    
+    <!-- ボタンテキスト -->
+    <string name="btn_back">戻る</string>
+    <string name="btn_next">次へ</string>
+    <string name="btn_finish">完了</string>
+    <string name="btn_restart">再開</string>
+    <string name="btn_pause">一時停止</string>
+    <string name="btn_resume">再開</string>
+    <string name="btn_hint">ヒント</string>
+    <string name="btn_explain">解説を見る</string>
+    <string name="btn_review">復習する</string>
+    <string name="btn_download">ダウンロード</string>
+    <string name="btn_update">更新</string>
+    
+    <!-- プレースホルダー -->
+    <string name="placeholder_loading">読み込み中…</string>
+    <string name="placeholder_empty">データがありません</string>
+    <string name="placeholder_error">エラーが発生しました</string>
+    
+    <!-- 通知 -->
+    <string name="notification_daily_reminder">今日も歴史を学びましょう！</string>
+    <string name="notification_quiz_reminder">クイズに挑戦する時間です</string>
+    <string name="notification_achievement">新しい実績を獲得しました</string>
+    
+    <!-- バージョン情報 -->
+    <string name="version_info">バージョン 1.0.0</string>
+    <string name="copyright">© 2024 HistoryMaster Team</string>
+    
+    <!-- 地域説明 -->
+    <string name="china_description">中国大陸を中心とする王朝および国家</string>
+    <string name="japan_description">日本列島の古代から現代までの歴史</string>
+    <string name="korea_description">朝鮮半島の三国時代から現在まで</string>
+    <string name="mongol_description">モンゴル帝国とその歴史</string>
+    <string name="vietnam_description">ベトナムの王朝と近代史</string>
+    <string name="cambodia_description">クメール王朝とアンコール文明</string>
 </resources>
