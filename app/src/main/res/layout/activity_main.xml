@@ -1,14 +1,125 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+<?xml version="1.0" encoding="utf-8"?>  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+android:layout_width="match_parent"  
+android:layout_height="match_parent"  
+android:orientation="vertical"  
+android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textViewHello"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world"
-        android:textSize="24sp"/>
+<TextView  
+    android:layout_width="wrap_content"  
+    android:layout_height="wrap_content"  
+    android:text="歴史家"  
+    android:textSize="24sp"  
+    android:textStyle="bold"  
+    android:layout_gravity="center_horizontal"  
+    android:layout_marginBottom="32dp"/>  
+  
+<TextView  
+    android:layout_width="wrap_content"  
+    android:layout_height="wrap_content"  
+    android:text="地域を選択"  
+    android:textSize="18sp"  
+    android:layout_marginBottom="8dp"/>  
+  
+<LinearLayout  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:orientation="horizontal">  
+      
+    <Button  
+        android:id="@+id/btn_china"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="中国"  
+        android:layout_margin="4dp"/>  
+      
+    <Button  
+        android:id="@+id/btn_japan"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="日本"  
+        android:layout_margin="4dp"/>  
+          
+    <Button  
+        android:id="@+id/btn_korea"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="韓国"  
+        android:layout_margin="4dp"/>  
+</LinearLayout>  
+  
+<LinearLayout  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:orientation="horizontal">  
+      
+    <Button  
+        android:id="@+id/btn_mongol"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="モンゴル"  
+        android:layout_margin="4dp"/>  
+      
+    <Button  
+        android:id="@+id/btn_vietnam"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="ベトナム"  
+        android:layout_margin="4dp"/>  
+          
+    <Button  
+        android:id="@+id/btn_cambodia"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="カンボジア"  
+        android:layout_margin="4dp"/>  
+</LinearLayout>  
+  
+<TextView  
+    android:layout_width="wrap_content"  
+    android:layout_height="wrap_content"  
+    android:text="機能を選択"  
+    android:textSize="18sp"  
+    android:layout_marginTop="32dp"  
+    android:layout_marginBottom="8dp"/>  
+  
+<Button  
+    android:id="@+id/btn_explanation"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:text="解説を見る"  
+    android:layout_marginBottom="8dp"/>  
+  
+<Button  
+    android:id="@+id/btn_quiz"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:text="クイズをする"  
+    android:layout_marginBottom="8dp"/>  
+  
+<Button  
+    android:id="@+id/btn_learning"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:text="学習する"  
+    android:layout_marginBottom="8dp"/>  
+  
+<Button  
+    android:id="@+id/btn_search"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:text="検索する"  
+    android:layout_marginBottom="8dp"/>  
+  
+<Button  
+    android:id="@+id/btn_test"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:text="テストを受ける"/>
+
 </LinearLayout>
