@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- デフォルト設定 -->
+    <bool name="default_dark_mode">false</bool>
+    <bool name="default_voice_guidance">true</bool>
+    <bool name="default_vibration">true</bool>
+    <bool name="default_auto_save">true</bool>
+    <bool name="default_show_hints">true</bool>
+    <bool name="default_auto_next_question">false</bool>
+    
+    <!-- 機能フラグ -->
+    <bool name="feature_wikipedia_enabled">true</bool>
+    <bool name="feature_wikidata_enabled">true</bool>
+    <bool name="feature_offline_mode">true</bool>
+    <bool name="feature_cloud_sync">false</bool>
+    <bool name="feature_social_share">true</bool>
+    
+    <!-- デバッグ設定 -->
+    <bool name="debug_log_enabled">false</bool>
+    <bool name="debug_show_fps">false</bool>
+    <bool name="debug_mock_data">false</bool>
+</resources>
