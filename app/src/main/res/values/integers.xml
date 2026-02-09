@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- デフォルト設定値 -->
+    <integer name="default_quiz_question_count">10</integer>
+    <integer name="default_test_question_count">20</integer>
+    <integer name="default_quiz_time_limit">30</integer>
+    <integer name="default_test_time_limit">1800</integer>
+    <integer name="default_difficulty">2</integer>
+    
+    <!-- アニメーション時間 -->
+    <integer name="animation_duration_short">200</integer>
+    <integer name="animation_duration_medium">300</integer>
+    <integer name="animation_duration_long">500</integer>
+    <integer name="animation_duration_very_long">1000</integer>
+    
+    <!-- キャッシュ設定 -->
+    <integer name="cache_size_memory">50</integer>
+    <integer name="cache_size_disk">100</integer>
+    <integer name="cache_expire_hours">24</integer>
+    
+    <!-- ページング設定 -->
+    <integer name="page_size">20</integer>
+    <integer name="prefetch_distance">10</integer>
+    
+    <!-- 学習設定 -->
+    <integer name="daily_study_goal">30</integer>
+    <integer name="weekly_quiz_goal">50</integer>
+    <integer name="flashcard_count">20</integer>
+    
+    <!-- レベル設定 -->
+    <integer name="level_up_exp_base">100</integer>
+    <integer name="level_up_exp_multiplier">150</integer>
+    <integer name="max_level">50</integer>
+    
+    <!-- リトライ回数 -->
+    <integer name="max_retry_count">3</integer>
+    <integer name="network_timeout_seconds">30</integer>
+    
+    <!-- 通知ID -->
+    <integer name="notification_id_daily">1001</integer>
+    <integer name="notification_id_achievement">1002</integer>
+    <integer name="notification_id_quiz">1003</integer>
+</resources>
