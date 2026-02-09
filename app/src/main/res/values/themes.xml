@@ -1,5 +1,55 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.HelloWorld" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Customize your theme here. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 地域別テーマ -->
+    <style name="Theme.HistoryMaster.China" parent="Theme.HistoryMaster">
+        <item name="colorPrimary">@color/region_china</item>
+        <item name="colorPrimaryDark">@color/region_china</item>
+    </style>
+    
+    <style name="Theme.HistoryMaster.Japan" parent="Theme.HistoryMaster">
+        <item name="colorPrimary">@color/region_japan</item>
+        <item name="colorPrimaryDark">@color/region_japan</item>
+    </style>
+    
+    <!-- 地域別ダークテーマ -->
+    <style name="Theme.HistoryMaster.China.Dark" parent="Theme.HistoryMaster.Dark">
+        <item name="colorPrimary">@color/region_china</item>
+        <item name="colorPrimaryDark">@color/region_china</item>
+    </style>
+    
+    <!-- フルスクリーンテーマ -->
+    <style name="Theme.HistoryMaster.FullScreen" parent="Theme.HistoryMaster">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    
+    <!-- ダイアログテーマ -->
+    <style name="Theme.HistoryMaster.Dialog.Alert" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+    
+    <!-- ボトムシートテーマ -->
+    <style name="Theme.HistoryMaster.BottomSheet" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/Widget.HistoryMaster.BottomSheet</item>
+    </style>
+    
+    <style name="Widget.HistoryMaster.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearance">@style/ShapeAppearance.HistoryMaster.LargeComponent</item>
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+    </style>
+    
+    <!-- スプラッシュスクリーンテーマ -->
+    <style name="Theme.HistoryMaster.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources>
