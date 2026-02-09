@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- カスタムビュー属性 -->
+    <declare-styleable name="TimelineView">
+        <attr name="timelineColor" format="color" />
+        <attr name="timelineWidth" format="dimension" />
+        <attr name="eventRadius" format="dimension" />
+        <attr name="eventSpacing" format="dimension" />
+        <attr name="showLabels" format="boolean" />
+    </declare-styleable>
+    
+    <declare-styleable name="RegionFlagView">
+        <attr name="regionCode" format="string" />
+        <attr name="showName" format="boolean" />
+        <attr name="flagSize" format="dimension" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="borderColor" format="color" />
+    </declare-styleable>
+    
+    <declare-styleable name="ProgressCircleView">
+        <attr name="progressColor" format="color" />
+        <attr name="progressBackgroundColor" format="color" />
+        <attr name="progressWidth" format="dimension" />
+        <attr name="progressMax" format="integer" />
+        <attr name="progressValue" format="integer" />
+        <attr name="showText" format="boolean" />
+        <attr name="textColor" format="color" />
+        <attr name="textSize" format="dimension" />
+    </declare-styleable>
+    
+    <declare-styleable name="QuizCardView">
+        <attr name="cardType" format="enum">
+            <enum name="multiple_choice" value="0" />
+            <enum name="true_false" value="1" />
+            <enum name="timeline" value="2" />
+        </attr>
+        <attr name="showTimer" format="boolean" />
+        <attr name="timerColor" format="color" />
+        <attr name="difficulty" format="integer" />
+    </declare-styleable>
+    
+    <!-- 共通属性 -->
+    <attr name="cornerRadiusTopLeft" format="dimension" />
+    <attr name="cornerRadiusTopRight" format="dimension" />
+    <attr name="cornerRadiusBottomLeft" format="dimension" />
+    <attr name="cornerRadiusBottomRight" format="dimension" />
+    
+    <attr name="shadowColor" format="color" />
+    <attr name="shadowRadius" format="dimension" />
+    <attr name="shadowOffsetX" format="dimension" />
+    <attr name="shadowOffsetY" format="dimension" />
+    
+    <attr name="gradientStartColor" format="color" />
+    <attr name="gradientEndColor" format="color" />
+    <attr name="gradientAngle" format="integer" />
+</resources>
