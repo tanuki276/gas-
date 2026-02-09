@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ベーステーマ -->
-    <style name="Theme.HistoryMaster" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- 主要色 -->
         <item name="colorPrimary">#D32F2F</item>
         <item name="colorPrimaryVariant">#B71C1C</item>
