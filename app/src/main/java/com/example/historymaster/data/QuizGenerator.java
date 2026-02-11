@@ -1,6 +1,6 @@
-package com.historymaster.data;
+package com.example.historymaster.data;
 
-import com.historymaster.models.*;
+import com.example.historymaster.models.*;
 import java.util.*;
 
 public class QuizGenerator {

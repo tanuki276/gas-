@@ -1,4 +1,4 @@
-package com.historymaster.ui;
+package com.example.historymaster.ui;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -7,10 +7,10 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.historymaster.R;
-import com.historymaster.data.JsonLoader;
-import com.historymaster.models.Entity;
-import com.historymaster.models.HistoryData;
+import com.example.historymaster.R;
+import com.example.historymaster.data.JsonLoader;
+import com.example.historymaster.models.Entity;
+import com.example.historymaster.models.HistoryData;
 import java.util.ArrayList;
 import java.util.List;
 

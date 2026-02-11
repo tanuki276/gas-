@@ -1,4 +1,4 @@
-package com.historymaster.api;
+package com.example.historymaster.api;
 
 import android.os.AsyncTask;
 import org.json.JSONObject;

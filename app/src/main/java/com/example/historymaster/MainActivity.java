@@ -1,4 +1,4 @@
-package com.historymaster;
+package com.example.historymaster;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,8 +1,8 @@
-package com.historymaster.data;
+package com.example.historymaster.data;
 
 import android.content.Context;
 import com.google.gson.Gson;
-import com.historymaster.models.HistoryData;
+import com.example.historymaster.models.HistoryData;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;

@@ -1,4 +1,4 @@
-package com.historymaster.models;
+package com.example.historymaster.models;
 
 import java.util.List;
 

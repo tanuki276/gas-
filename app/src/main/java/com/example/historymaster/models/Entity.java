@@ -1,5 +1,5 @@
 // app/src/main/java/com/historymaster/models/Entity.java
-package com.historymaster.models;
+package com.example.historymaster.models;
 
 import java.util.List;
 

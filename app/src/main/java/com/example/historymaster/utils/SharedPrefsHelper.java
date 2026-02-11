@@ -1,4 +1,4 @@
-package com.historymaster.utils;
+package com.example.historymaster.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

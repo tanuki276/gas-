@@ -1,14 +1,14 @@
-package com.historymaster.ui;
+package com.example.historymaster.ui;
 
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.historymaster.R;
-import com.historymaster.data.JsonLoader;
-import com.historymaster.models.HistoryData;
-import com.historymaster.models.Period;
+import com.example.historymaster.R;
+import com.example.historymaster.data.JsonLoader;
+import com.example.historymaster.models.HistoryData;
+import com.example.historymaster.models.Period;
 import java.util.List;
 
 public class ExplanationActivity extends AppCompatActivity {

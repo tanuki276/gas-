@@ -1,14 +1,14 @@
-package com.historymaster.ui;
+package com.example.historymaster.ui;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import com.historymaster.R;
-import com.historymaster.data.JsonLoader;
-import com.historymaster.data.QuizGenerator;
-import com.historymaster.models.HistoryData;
-import com.historymaster.models.QuizQuestion;
+import com.example.historymaster.R;
+import com.example.historymaster.data.JsonLoader;
+import com.example.historymaster.data.QuizGenerator;
+import com.example.historymaster.models.HistoryData;
+import com.example.historymaster.models.QuizQuestion;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity {
