@@ -1,5 +1,9 @@
 package com.example.historymaster.ui;
 
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import androidx.annotation.NonNull;
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
