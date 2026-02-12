@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- === ベーステーマ定義 === -->
     <style name="Theme.HistoryMaster" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#D32F2F</item>
         <item name="colorPrimaryDark">#B71C1C</item>
         <item name="colorOnPrimary">@android:color/white</item>
     </style>
 
-    <!-- ダークテーマ -->
     <style name="Theme.HistoryMaster.Dark" parent="Theme.HistoryMaster">
         <item name="android:windowBackground">#121212</item>
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
 
-    <!-- ダイアログアニメーションスタイル -->
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
         <item name="android:windowExitAnimation">@anim/dialog_exit</item>
     </style>
 
-    <!-- シェイプ定義 -->
     <style name="ShapeAppearance.HistoryMaster.LargeComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
 
-    <!-- === 以下は既存の内容 === -->
-    
-    <!-- 地域別テーマ -->
+    <style name="Widget.HistoryMaster.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.HistoryMaster.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
     <style name="Theme.HistoryMaster.China" parent="Theme.HistoryMaster">
         <item name="colorPrimary">@color/region_china</item>
         <item name="colorPrimaryDark">@color/region_china</item>
@@ -38,13 +40,6 @@
         <item name="colorPrimaryDark">@color/region_japan</item>
     </style>
 
-    <!-- 地域別ダークテーマ -->
-    <style name="Theme.HistoryMaster.China.Dark" parent="Theme.HistoryMaster.Dark">
-        <item name="colorPrimary">@color/region_china</item>
-        <item name="colorPrimaryDark">@color/region_china</item>
-    </style>
-
-    <!-- フルスクリーンテーマ -->
     <style name="Theme.HistoryMaster.FullScreen" parent="Theme.HistoryMaster">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
@@ -52,14 +47,12 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <!-- ダイアログテーマ -->
     <style name="Theme.HistoryMaster.Dialog.Alert" parent="Theme.MaterialComponents.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
         <item name="cornerRadius">16dp</item>
     </style>
 
-    <!-- ボトムシートテーマ -->
     <style name="Theme.HistoryMaster.BottomSheet" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:background">@android:color/transparent</item>
@@ -71,7 +64,6 @@
         <item name="android:background">@drawable/bottom_sheet_background</item>
     </style>
 
-    <!-- スプラッシュスクリーンテーマ -->
     <style name="Theme.HistoryMaster.Splash" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:windowFullscreen">true</item>
