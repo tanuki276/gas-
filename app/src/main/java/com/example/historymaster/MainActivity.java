@@ -7,6 +7,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.historymaster.utils.SharedPrefsHelper;
+import com.example.historymaster.ui.ExplanationActivity;
+import com.example.historymaster.ui.QuizActivity;
+import com.example.historymaster.ui.LearningActivity;
+import com.example.historymaster.ui.SearchActivity;
+import com.example.historymaster.ui.TestActivity;
+
 public class MainActivity extends AppCompatActivity {
     
     private String currentRegion = "china";
