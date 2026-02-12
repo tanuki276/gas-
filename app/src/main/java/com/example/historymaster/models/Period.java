@@ -1,4 +1,4 @@
-// app/src/main/java/com/historymaster/models/Period.java
+// app/src/main/java/com/example/historymaster/models/Period.java
 package com.example.historymaster.models;
 
 import java.util.List;
@@ -6,15 +6,28 @@ import java.util.List;
 public class Period {
     private String upper_level;
     private List<Entity> middle_level_entities;
-    
+
     public Period() {}
-    
+
+    public Period(String upper_level, List<Entity> middle_level_entities) {
+        this.upper_level = upper_level;
+        this.middle_level_entities = middle_level_entities;
+    }
+
     // ゲッター
-    public String getUpperLevel() { return upper_level; }
-    public List<Entity> getMiddleLevelEntities() { return middle_level_entities; }
-    
+    public String getUpperLevel() {
+        return upper_level;
+    }
+
+    public List<Entity> getMiddleLevelEntities() {
+        return middle_level_entities;
+    }
+
     // セッター
-    public void setUpperLevel(String upper_level) { this.upper_level = upper_level; }
+    public void setUpperLevel(String upper_level) {
+        this.upper_level = upper_level;
+    }
+
     public void setMiddleLevelEntities(List<Entity> middle_level_entities) {
         this.middle_level_entities = middle_level_entities;
     }
