@@ -24,37 +24,39 @@ import java.util.List;
 public class ExplanationActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView tvRegionName;
-    private HistoryData historyData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explanation);
-
-        String region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
-        historyData = JsonLoader.loadHistoryData(this, JsonLoader.getRegionFileName(region));
         initUI();
 
-        if (historyData != null) {
-            displayData();
-        } else {
-            tvRegionName.setText("データを読み込めませんでした");
-            Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
-        }
+        String region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
+        tvRegionName.setText("読み込み中…");
+        JsonLoader.loadHistoryDataAsync(this, JsonLoader.getRegionFileName(region), data -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (data != null) {
+                displayData(data);
+            } else {
+                tvRegionName.setText("データを読み込めませんでした");
+                Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initUI() {
         tvRegionName = findViewById(R.id.tv_region_name);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
     }
 
-    private void displayData() {
+    private void displayData(HistoryData historyData) {
         tvRegionName.setText(historyData.getRegionName() == null ? "歴史解説" : historyData.getRegionName());
         recyclerView.setAdapter(new PeriodAdapter(historyData.getPeriods()));
     }
 
-    class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.ViewHolder> {
+    static class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.ViewHolder> {
         private final List<Period> periods;
 
         PeriodAdapter(List<Period> periods) {
@@ -72,12 +74,12 @@ public class ExplanationActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Period period = periods.get(position);
             holder.tvPeriodName.setText(period.getUpperLevel() == null ? "" : period.getUpperLevel());
-            StringBuilder text = new StringBuilder();
+            StringBuilder text = new StringBuilder(256);
             appendEntities(period.getMiddleLevelEntities(), text, 0);
             holder.tvEntities.setText(text.toString().trim());
         }
 
-        private void appendEntities(List<Entity> entities, StringBuilder out, int depth) {
+        private static void appendEntities(List<Entity> entities, StringBuilder out, int depth) {
             if (entities == null) return;
             for (Entity entity : entities) {
                 if (entity == null || entity.getName() == null) continue;
@@ -91,15 +93,11 @@ public class ExplanationActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public int getItemCount() {
-            return periods.size();
-        }
+        @Override public int getItemCount() { return periods.size(); }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        static class ViewHolder extends RecyclerView.ViewHolder {
             final TextView tvPeriodName;
             final TextView tvEntities;
-
             ViewHolder(View itemView) {
                 super(itemView);
                 tvPeriodName = itemView.findViewById(R.id.tv_period_name);
