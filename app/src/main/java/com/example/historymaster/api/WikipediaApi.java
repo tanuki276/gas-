@@ -12,12 +12,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class WikipediaApi {
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private static final int CACHE_SIZE = 32;
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(3);
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private static final Map<String, String> CACHE = new LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
+        @Override protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
+            return size() > CACHE_SIZE;
+        }
+    };
 
     private WikipediaApi() {
     }
@@ -34,16 +42,26 @@ public final class WikipediaApi {
             return;
         }
 
+        String normalizedTitle = title.trim();
+        synchronized (CACHE) {
+            String cached = CACHE.get(normalizedTitle);
+            if (cached != null) {
+                MAIN.post(() -> callback.onSuccess(cached));
+                return;
+            }
+        }
+
         EXECUTOR.execute(() -> {
             HttpURLConnection connection = null;
             try {
-                String encodedTitle = URLEncoder.encode(title.trim(), "UTF-8").replace("+", "%20");
+                String encodedTitle = URLEncoder.encode(normalizedTitle, "UTF-8").replace("+", "%20");
                 URL url = new URL("https://ja.wikipedia.org/api/rest_v1/page/summary/" + encodedTitle);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", "HistoryMaster/1.0 (Android educational app)");
-                connection.setConnectTimeout(10000);
-                connection.setReadTimeout(10000);
+                connection.setConnectTimeout(7000);
+                connection.setReadTimeout(7000);
+                connection.setUseCaches(true);
 
                 int status = connection.getResponseCode();
                 InputStream stream = status >= 200 && status < 300
@@ -51,7 +69,9 @@ public final class WikipediaApi {
                 String body = readAll(stream);
 
                 if (status < 200 || status >= 300) {
-                    postError(callback, status == 404 ? "情報が見つかりませんでした" : "Wikipediaへの接続に失敗しました (" + status + ")");
+                    postError(callback, status == 404
+                        ? "情報が見つかりませんでした"
+                        : "Wikipediaへの接続に失敗しました (" + status + ")");
                     return;
                 }
 
@@ -60,6 +80,9 @@ public final class WikipediaApi {
                 if (extract.isEmpty()) {
                     postError(callback, "情報が見つかりませんでした");
                 } else {
+                    synchronized (CACHE) {
+                        CACHE.put(normalizedTitle, extract);
+                    }
                     MAIN.post(() -> callback.onSuccess(extract));
                 }
             } catch (Exception e) {
