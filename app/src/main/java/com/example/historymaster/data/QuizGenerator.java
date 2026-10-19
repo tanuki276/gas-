@@ -1,161 +1,141 @@
 package com.example.historymaster.data;
 
-import com.example.historymaster.models.*;
-import java.util.*;
+import com.example.historymaster.models.Entity;
+import com.example.historymaster.models.HistoryData;
+import com.example.historymaster.models.Period;
+import com.example.historymaster.models.QuizQuestion;
 
-public class QuizGenerator {
-    
-    private static final Random random = new Random();
-    
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+public final class QuizGenerator {
+
+    private static final Random RANDOM = new Random();
+
+    private QuizGenerator() {
+    }
+
     public static List<QuizQuestion> generateQuiz(HistoryData data, int questionCount) {
         List<QuizQuestion> questions = new ArrayList<>();
         List<Entity> allEntities = getAllEntities(data);
-        
-        if (allEntities.isEmpty()) return questions;
-        
-        for (int i = 0; i < questionCount; i++) {
-            int type = random.nextInt(3); // 0-2: 3種類の問題
-            
-            switch (type) {
-                case 0:
-                    questions.add(generateMultipleChoice(allEntities));
-                    break;
-                case 1:
-                    questions.add(generateTrueFalse(allEntities));
-                    break;
-                case 2:
-                    questions.add(generateTimelineQuestion(allEntities));
-                    break;
+        if (allEntities.isEmpty() || questionCount <= 0) return questions;
+
+        int maxQuestions = Math.min(questionCount, Math.max(1, allEntities.size() * 2));
+        for (int i = 0; i < maxQuestions; i++) {
+            QuizQuestion question;
+            if (allEntities.size() >= 4 && i % 2 == 0) {
+                question = generateMultipleChoice(allEntities);
+            } else {
+                question = generateTrueFalse(allEntities);
             }
+            if (question != null) questions.add(question);
         }
-        
         return questions;
     }
-    
+
     private static QuizQuestion generateMultipleChoice(List<Entity> allEntities) {
-        Entity correctEntity = allEntities.get(random.nextInt(allEntities.size()));
-        
-        String question = String.format("「%s」について正しい説明はどれですか？", correctEntity.getName());
+        if (allEntities.size() < 2) return generateTrueFalse(allEntities);
+
+        Entity correctEntity = allEntities.get(RANDOM.nextInt(allEntities.size()));
+        String question = String.format("「%s」について正しい説明はどれですか？", safeName(correctEntity));
         String correctAnswer = generateCorrectDescription(correctEntity);
-        
-        // 誤答を3つ生成
-        List<String> wrongAnswers = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            Entity wrongEntity;
-            do {
-                wrongEntity = allEntities.get(random.nextInt(allEntities.size()));
-            } while (wrongEntity == correctEntity);
-            wrongAnswers.add(generateWrongDescription(wrongEntity));
+
+        List<Entity> candidates = new ArrayList<>(allEntities);
+        candidates.remove(correctEntity);
+        Collections.shuffle(candidates, RANDOM);
+
+        Set<String> optionSet = new LinkedHashSet<>();
+        optionSet.add(correctAnswer);
+        for (Entity candidate : candidates) {
+            if (optionSet.size() >= 4) break;
+            optionSet.add(generateDescription(candidate));
         }
-        
-        // 選択肢をまとめてシャッフル
-        List<String> allOptions = new ArrayList<>();
-        allOptions.add(correctAnswer);
-        allOptions.addAll(wrongAnswers);
-        Collections.shuffle(allOptions);
-        
-        int correctIndex = allOptions.indexOf(correctAnswer);
-        
-        return new QuizQuestion(question, allOptions, correctIndex, "multiple_choice");
+        while (optionSet.size() < Math.min(4, allEntities.size())) {
+            optionSet.add("該当する説明はありません " + optionSet.size());
+        }
+
+        List<String> options = new ArrayList<>(optionSet);
+        Collections.shuffle(options, RANDOM);
+        int correctIndex = options.indexOf(correctAnswer);
+        QuizQuestion result = new QuizQuestion(question, options, correctIndex, "multiple_choice");
+        result.setExplanation(correctAnswer);
+        return result;
     }
-    
+
     private static QuizQuestion generateTrueFalse(List<Entity> allEntities) {
-        Entity entity = allEntities.get(random.nextInt(allEntities.size()));
-        boolean isTrue = random.nextBoolean();
-        
-        String fact = generateFact(entity);
-        String statement = isTrue ? fact : modifyFact(fact);
-        
-        String question = "次の文は正しいですか？\n\n" + statement;
+        if (allEntities == null || allEntities.isEmpty()) return null;
+
+        Entity entity = allEntities.get(RANDOM.nextInt(allEntities.size()));
+        boolean isTrue = RANDOM.nextBoolean();
+        String trueFact = generateCorrectDescription(entity);
+        String statement = isTrue ? trueFact : generateFalseStatement(entity, allEntities);
         List<String> options = Arrays.asList("正しい", "間違い");
-        int correctIndex = isTrue ? 0 : 1;
-        
-        return new QuizQuestion(question, options, correctIndex, "true_false");
+        QuizQuestion result = new QuizQuestion(
+            "次の文は正しいですか？\n\n" + statement,
+            options,
+            isTrue ? 0 : 1,
+            "true_false"
+        );
+        result.setExplanation(trueFact);
+        return result;
     }
-    
-    private static QuizQuestion generateTimelineQuestion(List<Entity> allEntities) {
-        // 3つのエンティティを選択
-        List<Entity> selected = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            Entity entity;
-            do {
-                entity = allEntities.get(random.nextInt(allEntities.size()));
-            } while (selected.contains(entity));
-            selected.add(entity);
+
+    private static String generateFalseStatement(Entity entity, List<Entity> allEntities) {
+        if (allEntities.size() > 1) {
+            List<Entity> others = new ArrayList<>(allEntities);
+            others.remove(entity);
+            Entity other = others.get(RANDOM.nextInt(others.size()));
+            String otherTag = firstTag(other);
+            if (otherTag != null) {
+                return safeName(entity) + "は「" + otherTag + "」で知られています";
+            }
         }
-        
-        // 時代順に並べ替え（簡易的）
-        selected.sort((a, b) -> estimateEra(a) - estimateEra(b));
-        
-        StringBuilder question = new StringBuilder();
-        question.append("以下の王朝を、成立したのが古い順に並べてください：\n\n");
-        
-        List<String> shuffledNames = new ArrayList<>();
-        for (Entity entity : selected) {
-            shuffledNames.add(entity.getName());
-        }
-        Collections.shuffle(shuffledNames);
-        
-        for (int i = 0; i < shuffledNames.size(); i++) {
-            question.append(i + 1).append(". ").append(shuffledNames.get(i)).append("\n");
-        }
-        
-        return new QuizQuestion(question.toString(), shuffledNames, 0, "timeline_order");
+        return safeName(entity) + "は歴史上存在しなかった国家・勢力です";
     }
-    
-    // ヘルパーメソッド
+
     private static List<Entity> getAllEntities(HistoryData data) {
         List<Entity> allEntities = new ArrayList<>();
+        if (data == null || data.getPeriods() == null) return allEntities;
         for (Period period : data.getPeriods()) {
-            collectEntities(period.getMiddleLevelEntities(), allEntities);
+            if (period != null) collectEntities(period.getMiddleLevelEntities(), allEntities);
         }
         return allEntities;
     }
-    
+
     private static void collectEntities(List<Entity> entities, List<Entity> result) {
+        if (entities == null) return;
         for (Entity entity : entities) {
+            if (entity == null || safeName(entity).isEmpty()) continue;
             result.add(entity);
-            if (entity.getSubEntities() != null) {
-                collectEntities(entity.getSubEntities(), result);
-            }
+            collectEntities(entity.getSubEntities(), result);
         }
     }
-    
+
     private static String generateCorrectDescription(Entity entity) {
-        if (entity.getTags() != null && !entity.getTags().isEmpty()) {
-            return entity.getName() + "は" + entity.getTags().get(0) + "でした";
-        }
-        return entity.getName() + "は重要な王朝でした";
+        String tag = firstTag(entity);
+        if (tag != null) return safeName(entity) + "は「" + tag + "」で知られています";
+        return safeName(entity) + "はこの地域の歴史に登場する国家・勢力です";
     }
-    
-    private static String generateWrongDescription(Entity entity) {
-        return entity.getName() + "は" + getRandomWrongDescription() + "でした";
+
+    private static String generateDescription(Entity entity) {
+        String tag = firstTag(entity);
+        return tag == null
+            ? safeName(entity) + "はこの地域の歴史に登場する国家・勢力です"
+            : safeName(entity) + "は「" + tag + "」で知られています";
     }
-    
-    private static String getRandomWrongDescription() {
-        String[] wrongs = {"存在しなかった", "別の地域の", "神話上の", "後に創作された"};
-        return wrongs[random.nextInt(wrongs.length)];
+
+    private static String firstTag(Entity entity) {
+        if (entity == null || entity.getTags() == null || entity.getTags().isEmpty()) return null;
+        String tag = entity.getTags().get(0);
+        return tag == null || tag.trim().isEmpty() ? null : tag.trim();
     }
-    
-    private static String generateFact(Entity entity) {
-        if (entity.getTags() != null && !entity.getTags().isEmpty()) {
-            return entity.getName() + "は" + entity.getTags().get(0) + "です";
-        }
-        return entity.getName() + "は歴史的に重要です";
-    }
-    
-    private static String modifyFact(String fact) {
-        String[] modifiers = {"ではなかった", "の逆である", "とは関係ない"};
-        return fact.replace("です", modifiers[random.nextInt(modifiers.length)] + "です");
-    }
-    
-    private static int estimateEra(Entity entity) {
-        // 簡易的な時代推定
-        String name = entity.getName();
-        if (name.contains("夏") || name.contains("殷")) return 1;
-        if (name.contains("秦") || name.contains("漢")) return 2;
-        if (name.contains("唐") || name.contains("宋")) return 3;
-        if (name.contains("明") || name.contains("清")) return 4;
-        return 5;
+
+    private static String safeName(Entity entity) {
+        return entity == null || entity.getName() == null ? "" : entity.getName().trim();
     }
 }
