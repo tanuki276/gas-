@@ -1,7 +1,10 @@
 package com.example.historymaster.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,36 +26,42 @@ import com.example.historymaster.models.HistoryData;
 import com.example.historymaster.models.Period;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
+    private static final long SEARCH_DEBOUNCE_MS = 180L;
+
     private EditText etSearch;
     private SearchAdapter adapter;
-    private final List<Entity> allEntities = new ArrayList<>();
+    private final List<SearchEntry> searchEntries = new ArrayList<>();
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
+    private final Runnable searchRunnable = () -> performSearch(etSearch == null ? "" : etSearch.getText().toString());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-        String region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
-        HistoryData historyData = JsonLoader.loadHistoryData(this, JsonLoader.getRegionFileName(region));
         initUI();
 
-        if (historyData != null && historyData.getPeriods() != null) {
-            for (Period period : historyData.getPeriods()) {
-                if (period != null) collectEntities(period.getMiddleLevelEntities(), allEntities);
+        String region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
+        JsonLoader.loadHistoryDataAsync(this, JsonLoader.getRegionFileName(region), data -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (data == null || data.getPeriods() == null) {
+                Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
+                return;
             }
-        } else {
-            Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
-        }
+            buildSearchIndex(data);
+            performSearch(etSearch.getText().toString());
+        });
     }
 
     private void initUI() {
         etSearch = findViewById(R.id.et_search);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
         adapter = new SearchAdapter();
         recyclerView.setAdapter(adapter);
 
@@ -59,50 +69,82 @@ public class SearchActivity extends AppCompatActivity {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void afterTextChanged(Editable s) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                performSearch(s == null ? "" : s.toString());
+                searchHandler.removeCallbacks(searchRunnable);
+                searchHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_MS);
             }
         });
     }
 
-    private void collectEntities(List<Entity> entities, List<Entity> result) {
+    private void buildSearchIndex(HistoryData historyData) {
+        searchEntries.clear();
+        for (Period period : historyData.getPeriods()) {
+            if (period != null) collectEntities(period.getMiddleLevelEntities());
+        }
+    }
+
+    private void collectEntities(List<Entity> entities) {
         if (entities == null) return;
         for (Entity entity : entities) {
             if (entity == null) continue;
-            result.add(entity);
-            collectEntities(entity.getSubEntities(), result);
+            String name = entity.getName() == null ? "" : entity.getName();
+            String tags = entity.getTags() == null ? "" : TextUtils.join("・", entity.getTags());
+            String searchable = (name + " " + tags).toLowerCase(Locale.ROOT);
+            searchEntries.add(new SearchEntry(entity, searchable));
+            collectEntities(entity.getSubEntities());
         }
     }
 
     private void performSearch(String query) {
-        String normalized = query.trim().toLowerCase(Locale.ROOT);
+        String normalized = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         if (normalized.isEmpty()) {
-            adapter.updateData(new ArrayList<>());
+            adapter.updateData(Collections.emptyList());
             return;
         }
 
         List<Entity> results = new ArrayList<>();
-        for (Entity entity : allEntities) {
-            if (matches(entity, normalized)) results.add(entity);
+        for (SearchEntry entry : searchEntries) {
+            if (entry.searchableText.contains(normalized)) results.add(entry.entity);
         }
         adapter.updateData(results);
     }
 
-    private boolean matches(Entity entity, String query) {
-        if (entity.getName() != null && entity.getName().toLowerCase(Locale.ROOT).contains(query)) return true;
-        if (entity.getTags() != null) {
-            for (String tag : entity.getTags()) {
-                if (tag != null && tag.toLowerCase(Locale.ROOT).contains(query)) return true;
-            }
+    @Override
+    protected void onDestroy() {
+        searchHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    private static class SearchEntry {
+        final Entity entity;
+        final String searchableText;
+        SearchEntry(Entity entity, String searchableText) {
+            this.entity = entity;
+            this.searchableText = searchableText;
         }
-        return false;
     }
 
     private static class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Holder> {
-        private List<Entity> items = new ArrayList<>();
+        private List<Entity> items = Collections.emptyList();
 
         void updateData(List<Entity> data) {
-            items = data == null ? new ArrayList<>() : data;
-            notifyDataSetChanged();
+            List<Entity> next = data == null ? Collections.emptyList() : new ArrayList<>(data);
+            DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override public int getOldListSize() { return items.size(); }
+                @Override public int getNewListSize() { return next.size(); }
+                @Override public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    String oldName = items.get(oldItemPosition).getName();
+                    String newName = next.get(newItemPosition).getName();
+                    return oldName != null && oldName.equals(newName);
+                }
+                @Override public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Entity oldItem = items.get(oldItemPosition);
+                    Entity newItem = next.get(newItemPosition);
+                    return java.util.Objects.equals(oldItem.getName(), newItem.getName())
+                        && java.util.Objects.equals(oldItem.getTags(), newItem.getTags());
+                }
+            });
+            items = next;
+            diff.dispatchUpdatesTo(this);
         }
 
         @NonNull
@@ -117,11 +159,8 @@ public class SearchActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             Entity entity = items.get(position);
             holder.title.setText(entity.getName() == null ? "" : entity.getName());
-            if (entity.getTags() == null || entity.getTags().isEmpty()) {
-                holder.subtitle.setText("説明なし");
-            } else {
-                holder.subtitle.setText(android.text.TextUtils.join("・", entity.getTags()));
-            }
+            holder.subtitle.setText(entity.getTags() == null || entity.getTags().isEmpty()
+                ? "説明なし" : TextUtils.join("・", entity.getTags()));
         }
 
         @Override public int getItemCount() { return items.size(); }
