@@ -111,7 +111,11 @@ public class TestActivity extends AppCompatActivity {
 
         answered = true;
         boolean isCorrect = question.checkAnswer(index);
-        if (isCorrect) testScore += 5;
+        if (isCorrect) {
+            testScore += 5;
+        } else {
+            SharedPrefsHelper.addReviewItem(this, question.getQuestion(), answerFor(question));
+        }
         highlightAnswer(index, isCorrect);
         setAnswerButtonsEnabled(false);
         btnNext.setEnabled(true);
@@ -119,6 +123,15 @@ public class TestActivity extends AppCompatActivity {
         if (question.getExplanation() != null) {
             Toast.makeText(this, question.getExplanation(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String answerFor(QuizQuestion question) {
+        if (question.getExplanation() != null && !question.getExplanation().trim().isEmpty()) {
+            return question.getExplanation();
+        }
+        int index = question.getCorrectIndex();
+        if (index >= 0 && index < question.getOptions().size()) return question.getOptions().get(index);
+        return "解説を確認してください";
     }
 
     private void highlightAnswer(int selectedIndex, boolean isCorrect) {
@@ -146,11 +159,14 @@ public class TestActivity extends AppCompatActivity {
         if (finished || testQuestions.isEmpty()) return;
         finished = true;
         SharedPrefsHelper.saveTestScore(this, region, testScore);
+        int earnedXp = Math.max(10, testScore / 5);
+        int xp = SharedPrefsHelper.addXp(this, earnedXp);
         int max = testQuestions.size() * 5;
         int best = SharedPrefsHelper.getTestScore(this, region);
         new AlertDialog.Builder(this)
-            .setTitle("テスト結果")
-            .setMessage(testScore + " / " + max + "点\nベストスコア: " + best + "点")
+            .setTitle("実力テスト完了 +" + earnedXp + " XP")
+            .setMessage(testScore + " / " + max + "点\nベスト: " + best + "点\n合計XP: " + xp +
+                "\n復習待ち: " + SharedPrefsHelper.getDueReviewCount(this) + "件")
             .setPositiveButton("終了", (d, w) -> finish())
             .setCancelable(false)
             .show();
