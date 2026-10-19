@@ -37,19 +37,22 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-
         region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
-        HistoryData data = JsonLoader.loadHistoryData(this, JsonLoader.getRegionFileName(region));
-        if (data != null) questions = QuizGenerator.generateQuiz(data, 10);
-
         initUI();
-        if (!questions.isEmpty()) {
-            displayQuestion(0);
-            startTimer();
-        } else {
-            Toast.makeText(this, "クイズを生成できませんでした", Toast.LENGTH_LONG).show();
-            btnSubmit.setEnabled(false);
-        }
+        setLoadingState(true);
+
+        JsonLoader.loadHistoryDataAsync(this, JsonLoader.getRegionFileName(region), data -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (data != null) questions = QuizGenerator.generateQuiz(data, 10);
+            if (!questions.isEmpty()) {
+                setLoadingState(false);
+                displayQuestion(0);
+                startTimer();
+            } else {
+                tvQuestion.setText("クイズを生成できませんでした");
+                Toast.makeText(this, "クイズを生成できませんでした", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initUI() {
@@ -63,6 +66,16 @@ public class QuizActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> checkAnswer(false));
         btnNext.setOnClickListener(v -> nextQuestion());
         tvScore.setText("0");
+    }
+
+    private void setLoadingState(boolean loading) {
+        btnSubmit.setEnabled(!loading);
+        btnNext.setEnabled(false);
+        if (loading) {
+            tvQuestion.setText("問題を準備中…");
+            tvQuestionNumber.setText("");
+            tvTimer.setText("");
+        }
     }
 
     private void displayQuestion(int index) {
