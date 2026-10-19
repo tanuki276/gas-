@@ -16,6 +16,55 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Validate history JSON
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          required_root = {"region_name", "description", "periods"}
+          required_period = {"upper_level", "middle_level_entities"}
+          required_entity = {"name", "tags"}
+
+          def validate_entity(entity, path):
+              missing = required_entity - entity.keys()
+              if missing:
+                  raise ValueError(f"{path}: missing keys {sorted(missing)}")
+              if not isinstance(entity["name"], str) or not entity["name"].strip():
+                  raise ValueError(f"{path}: name must be a non-empty string")
+              if not isinstance(entity["tags"], list) or not all(isinstance(x, str) for x in entity["tags"]):
+                  raise ValueError(f"{path}: tags must be a string array")
+              children = entity.get("sub_entities", [])
+              if children is not None:
+                  if not isinstance(children, list):
+                      raise ValueError(f"{path}: sub_entities must be an array")
+                  for i, child in enumerate(children):
+                      validate_entity(child, f"{path}.sub_entities[{i}]")
+
+          files = sorted(Path("app/src/main/resources").glob("*.json"))
+          if not files:
+              raise SystemExit("No history JSON files found")
+
+          for file in files:
+              with file.open(encoding="utf-8") as f:
+                  data = json.load(f)
+              missing = required_root - data.keys()
+              if missing:
+                  raise ValueError(f"{file}: missing keys {sorted(missing)}")
+              if not isinstance(data["periods"], list) or not data["periods"]:
+                  raise ValueError(f"{file}: periods must be a non-empty array")
+              for i, period in enumerate(data["periods"]):
+                  missing = required_period - period.keys()
+                  if missing:
+                      raise ValueError(f"{file}: periods[{i}] missing keys {sorted(missing)}")
+                  entities = period["middle_level_entities"]
+                  if not isinstance(entities, list):
+                      raise ValueError(f"{file}: periods[{i}].middle_level_entities must be an array")
+                  for j, entity in enumerate(entities):
+                      validate_entity(entity, f"{file}: periods[{i}].middle_level_entities[{j}]")
+              print(f"OK: {file}")
+          PY
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
