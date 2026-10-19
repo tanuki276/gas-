@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.historymaster.R;
 import com.example.historymaster.data.JsonLoader;
 import com.example.historymaster.data.QuizGenerator;
-import com.example.historymaster.models.HistoryData;
 import com.example.historymaster.models.QuizQuestion;
 import com.example.historymaster.utils.SharedPrefsHelper;
 
@@ -35,19 +34,21 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-
         region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
-        HistoryData data = JsonLoader.loadHistoryData(this, JsonLoader.getRegionFileName(region));
-        if (data != null) testQuestions = QuizGenerator.generateQuiz(data, 20);
-
         initUI();
-        if (!testQuestions.isEmpty()) {
-            displayQuestion(0);
-        } else {
-            Toast.makeText(this, "テスト問題を生成できませんでした", Toast.LENGTH_LONG).show();
-            setAnswerButtonsEnabled(false);
-            btnNext.setEnabled(false);
-        }
+        setLoadingState(true);
+
+        JsonLoader.loadHistoryDataAsync(this, JsonLoader.getRegionFileName(region), data -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (data != null) testQuestions = QuizGenerator.generateQuiz(data, 20);
+            if (!testQuestions.isEmpty()) {
+                setLoadingState(false);
+                displayQuestion(0);
+            } else {
+                tvQuestion.setText("テスト問題を生成できませんでした");
+                Toast.makeText(this, "テスト問題を生成できませんでした", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initUI() {
@@ -66,6 +67,16 @@ public class TestActivity extends AppCompatActivity {
         }
         btnNext.setOnClickListener(v -> nextQuestion());
         btnFinish.setOnClickListener(v -> finishTest());
+    }
+
+    private void setLoadingState(boolean loading) {
+        setAnswerButtonsEnabled(!loading);
+        btnNext.setEnabled(false);
+        btnFinish.setEnabled(!loading);
+        if (loading) {
+            tvQuestion.setText("問題を準備中…");
+            tvProgress.setText("");
+        }
     }
 
     private void displayQuestion(int index) {
@@ -132,7 +143,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
     private void finishTest() {
-        if (finished) return;
+        if (finished || testQuestions.isEmpty()) return;
         finished = true;
         SharedPrefsHelper.saveTestScore(this, region, testScore);
         int max = testQuestions.size() * 5;
