@@ -2,23 +2,28 @@ package com.example.historymaster;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.historymaster.data.JsonLoader;
 import com.example.historymaster.ui.ExplanationActivity;
+import com.example.historymaster.ui.KnowledgeActivity;
 import com.example.historymaster.ui.LearningActivity;
+import com.example.historymaster.ui.MapActivity;
 import com.example.historymaster.ui.QuizActivity;
+import com.example.historymaster.ui.RelationsActivity;
+import com.example.historymaster.ui.ReviewActivity;
 import com.example.historymaster.ui.SearchActivity;
 import com.example.historymaster.ui.TestActivity;
+import com.example.historymaster.ui.TimelineActivity;
 import com.example.historymaster.utils.SharedPrefsHelper;
 
 public class MainActivity extends AppCompatActivity {
 
     private String currentRegion = "china";
     private TextView tvWelcome;
+    private TextView tvStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +33,15 @@ public class MainActivity extends AppCompatActivity {
         loadUserProgress();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStats();
+    }
+
     private void initViews() {
         tvWelcome = findViewById(R.id.tv_welcome);
+        tvStats = findViewById(R.id.tv_stats);
 
         findViewById(R.id.btn_china).setOnClickListener(v -> setRegion("china"));
         findViewById(R.id.btn_japan).setOnClickListener(v -> setRegion("japan"));
@@ -37,12 +49,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_mongol).setOnClickListener(v -> setRegion("mongol"));
         findViewById(R.id.btn_vietnam).setOnClickListener(v -> setRegion("vietnam"));
         findViewById(R.id.btn_cambodia).setOnClickListener(v -> setRegion("cambodia"));
+        findViewById(R.id.btn_laos).setOnClickListener(v -> setRegion("laos"));
 
         findViewById(R.id.btn_explanation).setOnClickListener(v -> openActivity(ExplanationActivity.class));
         findViewById(R.id.btn_quiz).setOnClickListener(v -> openActivity(QuizActivity.class));
         findViewById(R.id.btn_learning).setOnClickListener(v -> openActivity(LearningActivity.class));
         findViewById(R.id.btn_search).setOnClickListener(v -> openActivity(SearchActivity.class));
         findViewById(R.id.btn_test).setOnClickListener(v -> openActivity(TestActivity.class));
+        findViewById(R.id.btn_review).setOnClickListener(v -> openActivity(ReviewActivity.class));
+        findViewById(R.id.btn_timeline).setOnClickListener(v -> openActivity(TimelineActivity.class));
+        findViewById(R.id.btn_relations).setOnClickListener(v -> openActivity(RelationsActivity.class));
+        findViewById(R.id.btn_map).setOnClickListener(v -> openActivity(MapActivity.class));
+        findViewById(R.id.btn_knowledge).setOnClickListener(v -> openActivity(KnowledgeActivity.class));
     }
 
     private void setRegion(String region) {
@@ -59,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         switch (regionCode) {
             case "china": return "中国";
             case "japan": return "日本";
-            case "korea": return "韓国";
+            case "korea": return "朝鮮半島";
             case "mongol": return "モンゴル";
             case "vietnam": return "ベトナム";
             case "cambodia": return "カンボジア";
@@ -79,5 +97,15 @@ public class MainActivity extends AppCompatActivity {
             SharedPrefsHelper.getCurrentRegion(this, "china"));
         tvWelcome.setText(getRegionDisplayName(currentRegion) + "の歴史を学ぼう！");
         JsonLoader.preloadRegion(this, currentRegion);
+        updateStats();
+    }
+
+    private void updateStats() {
+        if (tvStats == null) return;
+        int xp = SharedPrefsHelper.getXp(this);
+        int level = SharedPrefsHelper.getLevel(this);
+        int streak = SharedPrefsHelper.getStreak(this);
+        int reviews = SharedPrefsHelper.getDueReviewCount(this);
+        tvStats.setText("Lv." + level + "  •  " + xp + " XP  •  🔥 " + streak + "日  •  復習 " + reviews);
     }
 }
