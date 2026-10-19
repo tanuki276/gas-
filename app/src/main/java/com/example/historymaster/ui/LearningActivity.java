@@ -65,17 +65,19 @@ public class LearningActivity extends AppCompatActivity {
         int current = SharedPrefsHelper.getLearningProgress(this, region);
         int next = Math.min(100, current + 10);
         SharedPrefsHelper.saveLearningProgress(this, region, next);
+        int xp = SharedPrefsHelper.addXp(this, 10);
+        int streak = SharedPrefsHelper.getStreak(this);
         updateProgressText();
         new AlertDialog.Builder(this)
-            .setTitle("学習セッション完了")
-            .setMessage("この地域の学習進捗を " + next + "% に更新しました。")
-            .setPositiveButton("OK", null)
+            .setTitle("レッスン完了 +10 XP")
+            .setMessage("学習進捗: " + next + "%\n合計XP: " + xp + "\n連続学習: " + streak + "日")
+            .setPositiveButton("つづける", null)
             .show();
     }
 
     private void updateProgressText() {
         int progress = SharedPrefsHelper.getLearningProgress(this, region);
-        tvProgress.setText("学習進捗: " + progress + "%");
+        tvProgress.setText("学習進捗: " + progress + "%  ・  Lv." + SharedPrefsHelper.getLevel(this));
     }
 
     private static class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.Holder> {
@@ -90,7 +92,7 @@ public class LearningActivity extends AppCompatActivity {
 
         @Override public void onBindViewHolder(@NonNull Holder holder, int position) {
             Period period = items.get(position);
-            holder.title.setText(period.getUpperLevel() == null ? "" : period.getUpperLevel());
+            holder.title.setText("ユニット " + (position + 1) + "  " + (period.getUpperLevel() == null ? "" : period.getUpperLevel()));
             int count = period.getMiddleLevelEntities() == null ? 0 : period.getMiddleLevelEntities().size();
             holder.subtitle.setText("主要項目: " + count + "件");
         }
