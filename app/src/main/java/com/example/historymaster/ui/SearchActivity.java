@@ -1,109 +1,49 @@
 package com.example.historymaster.ui;
-
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.historymaster.R;
-import com.example.historymaster.data.JsonLoader;
+import android.widget.*;
+import android.text.*;
 import com.example.historymaster.models.Entity;
-import com.example.historymaster.models.HistoryData;
-import java.util.ArrayList;
-import java.util.List;
-
-public class SearchActivity extends AppCompatActivity {
-    
-    private EditText etSearch;
-    private RecyclerView recyclerView;
-    private SearchAdapter adapter;
-    private HistoryData historyData;
-    private List<Entity> allEntities = new ArrayList<>();
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        
-        String region = getIntent().getStringExtra("region");
-        
-        historyData = JsonLoader.loadHistoryData(this,
-            JsonLoader.getRegionFileName(region));
-        
-        initUI();
-        
-        if (historyData != null) {
-            loadAllEntities();
+import java.util.Locale;
+public class SearchActivity extends Screen  {
+    @Override public void onCreate(Bundle b) {
+        super.onCreate(b);
+        page("歴史を検索","国・王朝・人物・キーワードから、選択中の地域の教材を探せます。");
+        if(!ready())return;
+        EditText input=new EditText(this);
+        input.setHint("例：貿易、幕府、仏教");
+        input.setTextColor(ink);
+        input.setSingleLine(true);
+        input.setMinHeight(dp(56));
+        body.addView(input);
+        LinearLayout results=new LinearLayout(this);
+        results.setOrientation(1);
+        body.addView(results);
+        input.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s,int a,int c,int f) {
+            }
+            public void afterTextChanged(Editable e) {
+            }
+            public void onTextChanged(CharSequence s,int a,int before,int c) {
+                render(s.toString(),results);
+            }
         }
+        );
+        render("",results);
     }
-    
-    private void initUI() {
-        etSearch = findViewById(R.id.et_search);
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        
-        adapter = new SearchAdapter(new ArrayList<>());
-        recyclerView.setAdapter(adapter);
-        
-        // 検索リスナー
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                performSearch(s.toString());
-            }
-            
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-    }
-    
-    private void loadAllEntities() {
-        if (historyData.getPeriods() != null) {
-            for (Period period : historyData.getPeriods()) {
-                collectEntities(period.getMiddleLevelEntities(), allEntities);
+    private void render(String q,LinearLayout results) {
+        results.removeAllViews();
+        LinearLayout root=body;
+        body=results;
+        int found=0;
+        String query=q.trim().toLowerCase(Locale.ROOT);
+        for(Entity e:entities()) {
+            String tags=e.getTags()==null?"":TextUtils.join(" · ",e.getTags());
+            if((e.getName()+tags).toLowerCase(Locale.ROOT).contains(query)) {
+                found++;
+                button(e.getName()+"\n"+tags,()->article(e.getName()),false);
             }
         }
-    }
-    
-    private void collectEntities(List<Entity> entities, List<Entity> result) {
-        for (Entity entity : entities) {
-            result.add(entity);
-            if (entity.getSubEntities() != null) {
-                collectEntities(entity.getSubEntities(), result);
-            }
-        }
-    }
-    
-    private void performSearch(String query) {
-        if (query.trim().isEmpty()) {
-            adapter.updateData(new ArrayList<>());
-            return;
-        }
-        
-        List<Entity> results = new ArrayList<>();
-        String lowerQuery = query.toLowerCase();
-        
-        for (Entity entity : allEntities) {
-            if (entity.getName().toLowerCase().contains(lowerQuery)) {
-                results.add(entity);
-                continue;
-            }
-            
-            if (entity.getTags() != null) {
-                for (String tag : entity.getTags()) {
-                    if (tag.toLowerCase().contains(lowerQuery)) {
-                        results.add(entity);
-                        break;
-                    }
-                }
-            }
-        }
-        
-        adapter.updateData(results);
+        text(found==0?"該当する項目がありません。別の言葉で検索してください。":found+"件の項目",14,false);
+        body=root;
     }
 }

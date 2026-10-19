@@ -1,57 +1,40 @@
 package com.example.historymaster.api;
-
-import android.os.AsyncTask;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-public class WikipediaApi {
-    
-    public interface ApiCallback {
+import android.os.Handler;
+import android.os.Looper;
+import org.json.*;
+import java.io.*;
+import java.net.*;
+import java.util.concurrent.*;
+public final class WikipediaApi  {
+    private static final ExecutorService EXECUTOR=Executors.newFixedThreadPool(2);
+    public interface ApiCallback  {
         void onSuccess(String result);
         void onError(String error);
     }
-    
-    public static void getSummary(String title, ApiCallback callback) {
-        new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    String encodedTitle = java.net.URLEncoder.encode(params[0], "UTF-8");
-                    String url = "https://ja.wikipedia.org/api/rest_v1/page/summary/" + encodedTitle;
-                    
-                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setRequestProperty("User-Agent", "HistoryMaster/1.0");
-                    
-                    BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream(), "UTF-8"));
-                    
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    reader.close();
-                    
-                    JSONObject json = new JSONObject(response.toString());
-                    return json.optString("extract", "情報が見つかりませんでした");
-                    
-                } catch (Exception e) {
-                    return null;
+    public static String articleUrl(String title) {
+        try {
+            return "https://ja.wikipedia.org/wiki/"+URLEncoder.encode(title,"UTF-8").replace("+","%20");
+        }
+        catch(Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    public static Future<?> getSummary(String title,ApiCallback callback) {
+        Handler main=new Handler(Looper.getMainLooper());
+        return EXECUTOR.submit(()-> {
+            HttpURLConnection connection=null; try  {
+                String url="https://ja.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=extracts%7Cpageprops&exintro=1&explaintext=1&exchars=1200&redirects=1&titles="+URLEncoder.encode(title,"UTF-8"); connection=(HttpURLConnection)new URL(url).openConnection();connection.setConnectTimeout(10000);connection.setReadTimeout(15000);connection.setRequestProperty("User-Agent","HistoryMaster/2.0 (https://github.com/tanuki276/gas-)"); if(connection.getResponseCode()!=200)throw new IOException();StringBuilder raw=new StringBuilder(); try(BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"))) {
+                    String line;while((line=reader.readLine())!=null)raw.append(line);
                 }
+                JSONObject page=new JSONObject(raw.toString()).getJSONObject("query").getJSONArray("pages").getJSONObject(0); if(page.has("missing")||(page.optJSONObject("pageprops")!=null&&page.getJSONObject("pageprops").has("disambiguation")))throw new IOException(); String extract=page.optString("extract").trim();if(extract.isEmpty())throw new IOException(); if(!Thread.currentThread().isInterrupted())main.post(()->callback.onSuccess(extract));
             }
-            
-            @Override
-            protected void onPostExecute(String result) {
-                if (result != null) {
-                    callback.onSuccess(result);
-                } else {
-                    callback.onError("情報を取得できませんでした");
-                }
+            catch(Exception e) {
+                if(!Thread.currentThread().isInterrupted())main.post(()->callback.onError("解説を取得できませんでした。通信状態、または記事名をご確認ください。"));
             }
-        }.execute(title);
+            finally {
+                if(connection!=null)connection.disconnect();
+            }
+        }
+        );
     }
 }

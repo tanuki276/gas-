@@ -1,101 +1,24 @@
 package com.example.historymaster.ui;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import androidx.annotation.NonNull;
 import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.historymaster.R;
-import com.example.historymaster.data.JsonLoader;
-import com.example.historymaster.models.HistoryData;
-import com.example.historymaster.models.Period;
-import java.util.List;
-
-public class ExplanationActivity extends AppCompatActivity {
-    
-    private RecyclerView recyclerView;
-    private TextView tvRegionName;
-    private HistoryData historyData;
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explanation);
-        
-        String region = getIntent().getStringExtra("region");
-        
-        // データ読み込み
-        historyData = JsonLoader.loadHistoryData(this, 
-            JsonLoader.getRegionFileName(region));
-        
-        initUI();
-        
-        if (historyData != null) {
-            displayData();
+import com.example.historymaster.data.Regions;
+import com.example.historymaster.models.*;
+public class ExplanationActivity extends Screen  {
+    @Override public void onCreate(Bundle b) {
+        super.onCreate(b);
+        page(Regions.NAMES[Regions.index(region)]+"の歴史","時代から探す · 項目をタップするとWikipedia解説が開きます");
+        button("地域の歴史を概観する",()->article(Regions.ARTICLES[Regions.index(region)]),true);
+        if(!ready())return;
+        text(data.getDescription(),15,false);
+        for(Period p:data.getPeriods()) {
+            text(p.getUpperLevel(),22,true);
+            show(p.getMiddleLevelEntities(),0);
         }
     }
-    
-    private void initUI() {
-        tvRegionName = findViewById(R.id.tv_region_name);
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-    
-    private void displayData() {
-        tvRegionName.setText(historyData.getRegionName());
-        
-        // アダプター設定
-        PeriodAdapter adapter = new PeriodAdapter(historyData.getPeriods());
-        recyclerView.setAdapter(adapter);
-    }
-    
-    // アダプタークラス
-    class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.ViewHolder> {
-        private List<Period> periods;
-        
-        public PeriodAdapter(List<Period> periods) {
-            this.periods = periods;
-        }
-        
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_period, parent, false);
-            return new ViewHolder(view);
-        }
-        
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Period period = periods.get(position);
-            holder.tvPeriodName.setText(period.getUpperLevel());
-            
-            // エンティティを表示
-            StringBuilder entitiesText = new StringBuilder();
-            for (Entity entity : period.getMiddleLevelEntities()) {
-                entitiesText.append("・").append(entity.getName()).append("\n");
-            }
-            holder.tvEntities.setText(entitiesText.toString());
-        }
-        
-        @Override
-        public int getItemCount() {
-            return periods.size();
-        }
-        
-        class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvPeriodName;
-            TextView tvEntities;
-            
-            ViewHolder(View itemView) {
-                super(itemView);
-                tvPeriodName = itemView.findViewById(R.id.tv_period_name);
-                tvEntities = itemView.findViewById(R.id.tv_entities);
-            }
+    private void show(java.util.List<Entity> list,int depth) {
+        if(list==null)return;
+        for(Entity e:list) {
+            button((depth>0?"↳ ":"")+e.getName()+"\n"+(e.getTags()==null?"":android.text.TextUtils.join(" · ",e.getTags())),()->article(e.getName()),false);
+            show(e.getSubEntities(),depth+1);
         }
     }
 }

@@ -1,123 +1,38 @@
 package com.example.historymaster;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.example.historymaster.ui.*;
+import com.example.historymaster.data.*;
 import com.example.historymaster.utils.SharedPrefsHelper;
-import com.example.historymaster.ui.ExplanationActivity;
-import com.example.historymaster.ui.QuizActivity;
-import com.example.historymaster.ui.LearningActivity;
-import com.example.historymaster.ui.SearchActivity;
-import com.example.historymaster.ui.TestActivity;
-
-public class MainActivity extends AppCompatActivity {
-    
-    private String currentRegion = "china";
-    private TextView tvWelcome;
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
-        // UI初期化
-        initViews();
-        
-        // ユーザー進捗を読み込み
-        loadUserProgress();
+public class MainActivity extends Screen  {
+    @Override public void onCreate(Bundle b) {
+        super.onCreate(b);
+        region=Regions.safe(SharedPrefsHelper.getCurrentRegion(this,"china"));
+        render();
     }
-    
-    private void initViews() {
-        tvWelcome = findViewById(R.id.tv_welcome);
-        
-        // 地域選択ボタン
-        Button btnChina = findViewById(R.id.btn_china);
-        Button btnJapan = findViewById(R.id.btn_japan);
-        Button btnKorea = findViewById(R.id.btn_korea);
-        Button btnMongol = findViewById(R.id.btn_mongol);
-        Button btnVietnam = findViewById(R.id.btn_vietnam);
-        Button btnCambodia = findViewById(R.id.btn_cambodia);
-        
-        // 地域ボタンのリスナー
-        btnChina.setOnClickListener(v -> setRegion("china"));
-        btnJapan.setOnClickListener(v -> setRegion("japan"));
-        btnKorea.setOnClickListener(v -> setRegion("korea"));
-        btnMongol.setOnClickListener(v -> setRegion("mongol"));
-        btnVietnam.setOnClickListener(v -> setRegion("vietnam"));
-        btnCambodia.setOnClickListener(v -> setRegion("cambodia"));
-        
-        // 機能ボタン
-        Button btnExplanation = findViewById(R.id.btn_explanation);
-        Button btnQuiz = findViewById(R.id.btn_quiz);
-        Button btnLearning = findViewById(R.id.btn_learning);
-        Button btnSearch = findViewById(R.id.btn_search);
-        Button btnTest = findViewById(R.id.btn_test);
-        
-        btnExplanation.setOnClickListener(v -> openExplanation());
-        btnQuiz.setOnClickListener(v -> openQuiz());
-        btnLearning.setOnClickListener(v -> openLearning());
-        btnSearch.setOnClickListener(v -> openSearch());
-        btnTest.setOnClickListener(v -> openTest());
+    @Override protected void onResume() {
+        super.onResume();
+        render();
     }
-    
-    private void setRegion(String region) {
-        currentRegion = region;
-        SharedPrefsHelper.saveCurrentRegion(this, region);
-        
-        // 地域名を表示
-        String regionName = getRegionDisplayName(region);
-        tvWelcome.setText(regionName + "の歴史を学ぼう！");
-    }
-    
-    private String getRegionDisplayName(String regionCode) {
-        switch (regionCode) {
-            case "china": return "中国";
-            case "japan": return "日本";
-            case "korea": return "韓国";
-            case "mongol": return "モンゴル";
-            case "vietnam": return "ベトナム";
-            case "cambodia": return "カンボジア";
-            default: return "中国";
+    private void render() {
+        int i=Regions.index(region);
+        page("歴史を、旅しよう。","HISTORY MASTER  /  アジアの7地域を探究");
+        text("今日の一歩",20,true);
+        text("解説をひとつ読む。それだけでも、新しい発見につながります。",15,false);
+        text("探索中 · "+Regions.NAMES[i],22,true);
+        text("既読 "+SharedPrefsHelper.readCount(this,region)+"項目  ·  クイズ最高 "+SharedPrefsHelper.getQuizScore(this,region)+"点",14,false);
+        button("はじめに読む → "+Regions.NAMES[i]+"の歴史",()->article(Regions.ARTICLES[Regions.index(region)]),true);
+        button("時代・国・王朝を探す",()->open(ExplanationActivity.class),false);
+        button("学習を続ける",()->open(LearningActivity.class),false);
+        button("5問のクイズに挑戦",()->open(QuizActivity.class),true);
+        button("理解度テスト · 10問",()->open(TestActivity.class),false);
+        button("キーワードで検索",()->open(SearchActivity.class),false);
+        text("次はどこを旅する？",22,true);
+        for(int n=0;n<Regions.IDS.length;n++) {
+            final int k=n;
+            button((i==n?"✓  ":"")+Regions.NAMES[n],()-> {
+                region=Regions.IDS[k];SharedPrefsHelper.saveCurrentRegion(this,region);render();
+            }
+            ,i==n);
         }
-    }
-    
-    private void openExplanation() {
-        Intent intent = new Intent(this, ExplanationActivity.class);
-        intent.putExtra("region", currentRegion);
-        startActivity(intent);
-    }
-    
-    private void openQuiz() {
-        Intent intent = new Intent(this, QuizActivity.class);
-        intent.putExtra("region", currentRegion);
-        startActivity(intent);
-    }
-    
-    private void openLearning() {
-        Intent intent = new Intent(this, LearningActivity.class);
-        intent.putExtra("region", currentRegion);
-        startActivity(intent);
-    }
-    
-    private void openSearch() {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.putExtra("region", currentRegion);
-        startActivity(intent);
-    }
-    
-    private void openTest() {
-        Intent intent = new Intent(this, TestActivity.class);
-        intent.putExtra("region", currentRegion);
-        startActivity(intent);
-    }
-    
-    private void loadUserProgress() {
-        // 現在の地域を読み込み
-        currentRegion = SharedPrefsHelper.getCurrentRegion(this, "china");
-        setRegion(currentRegion);
     }
 }

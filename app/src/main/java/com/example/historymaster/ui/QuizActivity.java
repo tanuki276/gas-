@@ -1,167 +1,84 @@
 package com.example.historymaster.ui;
-
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import com.example.historymaster.R;
-import com.example.historymaster.data.JsonLoader;
+import com.example.historymaster.models.*;
 import com.example.historymaster.data.QuizGenerator;
-import com.example.historymaster.models.HistoryData;
-import com.example.historymaster.models.QuizQuestion;
-import java.util.List;
-
-public class QuizActivity extends AppCompatActivity {
-    
+import com.example.historymaster.utils.SharedPrefsHelper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.util.*;
+public class QuizActivity extends Screen  {
     private List<QuizQuestion> questions;
-    private int currentQuestionIndex = 0;
-    private int score = 0;
-    private CountDownTimer timer;
-    
-    private TextView tvQuestion, tvQuestionNumber, tvTimer, tvScore;
-    private RadioGroup radioGroup;
-    private Button btnSubmit, btnNext;
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quiz);
-        
-        String region = getIntent().getStringExtra("region");
-        
-        // データ読み込みとクイズ生成
-        HistoryData data = JsonLoader.loadHistoryData(this,
-            JsonLoader.getRegionFileName(region));
-        
-        if (data != null) {
-            questions = QuizGenerator.generateQuiz(data, 10);
-        }
-        
-        initUI();
-        
-        if (questions != null && !questions.isEmpty()) {
-            displayQuestion(currentQuestionIndex);
-        }
+    private int index,score,selected=-1;
+    private boolean answered;
+    private final List<Button> options=new ArrayList<>();
+    protected int questionCount() {
+        return 5;
     }
-    
-    private void initUI() {
-        tvQuestion = findViewById(R.id.tv_question);
-        tvQuestionNumber = findViewById(R.id.tv_question_number);
-        tvTimer = findViewById(R.id.tv_timer);
-        tvScore = findViewById(R.id.tv_score);
-        radioGroup = findViewById(R.id.radio_group);
-        btnSubmit = findViewById(R.id.btn_submit);
-        btnNext = findViewById(R.id.btn_next);
-        
-        btnSubmit.setOnClickListener(v -> checkAnswer());
-        btnNext.setOnClickListener(v -> nextQuestion());
-        
-        startTimer();
+    @Override public void onCreate(Bundle b) {
+        super.onCreate(b);
+        if(b!=null) {
+            questions=new Gson().fromJson(b.getString("questions"),new TypeToken<List<QuizQuestion>>() {
+            }
+            .getType());
+            index=b.getInt("index");
+            score=b.getInt("score");
+            answered=b.getBoolean("answered");
+            selected=b.getInt("selected",-1);
+        }
+        else questions=QuizGenerator.generateQuiz(data,questionCount());
+        render();
     }
-    
-    private void displayQuestion(int index) {
-        if (index >= questions.size()) {
-            finishQuiz();
+    private void render() {
+        page(questionCount()==5?"発見をクイズに。":"理解度テスト","時間制限なし · 教材の関連語から出題");
+        if(questions==null||questions.isEmpty()) {
+            text("この教材では出題できません。先に解説をお楽しみください。",16,false);
             return;
         }
-        
-        QuizQuestion question = questions.get(index);
-        tvQuestion.setText(question.getQuestion());
-        tvQuestionNumber.setText("問題 " + (index + 1) + "/" + questions.size());
-        
-        // 選択肢を表示
-        radioGroup.removeAllViews();
-        List<String> options = question.getOptions();
-        for (int i = 0; i < options.size(); i++) {
-            RadioButton radioButton = new RadioButton(this);
-            radioButton.setText(options.get(i));
-            radioButton.setId(i);
-            radioGroup.addView(radioButton);
-        }
-        
-        // ボタン状態をリセット
-        btnSubmit.setEnabled(true);
-        btnNext.setEnabled(false);
-    }
-    
-    private void startTimer() {
-        if (timer != null) timer.cancel();
-        
-        timer = new CountDownTimer(30000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int seconds = (int) (millisUntilFinished / 1000);
-                tvTimer.setText(seconds + "秒");
+        if(index>=questions.size()) {
+            int percent=Math.round(score*100f/questions.size());
+            text("おつかれさまでした！",26,true);
+            text(score+" / "+questions.size()+" 問正解 · "+percent+"点",22,true);
+            SharedPrefsHelper.saveQuizScore(this,region,percent);
+            button("もう一度挑戦",()-> {
+                questions=QuizGenerator.generateQuiz(data,questionCount());index=score=0;answered=false;selected=-1;render();
             }
-            
-            @Override
-            public void onFinish() {
-                // 時間切れ
-                checkAnswer();
-            }
-        }.start();
-    }
-    
-    private void checkAnswer() {
-        timer.cancel();
-        
-        int selectedId = radioGroup.getCheckedRadioButtonId();
-        if (selectedId == -1) {
-            // 回答がない場合は不正解扱い
-            showAnswerFeedback(false);
+            ,true);
+            button("解説で振り返る",()->open(ExplanationActivity.class),false);
             return;
         }
-        
-        QuizQuestion currentQuestion = questions.get(currentQuestionIndex);
-        boolean isCorrect = currentQuestion.checkAnswer(selectedId);
-        
-        if (isCorrect) {
-            score += 10;
-            tvScore.setText("スコア: " + score);
+        QuizQuestion q=questions.get(index);
+        text((index+1)+" / "+questions.size()+" 問",16,false);
+        text(q.getQuestion(),23,true);
+        options.clear();
+        for(int k=0;k<q.getOptions().size();k++) {
+            final int n=k;
+            Button option=button(q.getOptions().get(k),()->answer(n),false);
+            option.setEnabled(!answered);
+            options.add(option);
         }
-        
-        showAnswerFeedback(isCorrect);
-        btnSubmit.setEnabled(false);
-        btnNext.setEnabled(true);
-    }
-    
-    private void showAnswerFeedback(boolean isCorrect) {
-        if (isCorrect) {
-            // 正解のアニメーションやメッセージ
-        } else {
-            // 不正解のメッセージ
-            QuizQuestion question = questions.get(currentQuestionIndex);
-            int correctIndex = question.getCorrectIndex();
-            RadioButton correctButton = findViewById(correctIndex);
-            if (correctButton != null) {
-                correctButton.setTextColor(getColor(R.color.correct_answer));
+        if(answered) {
+            text((q.checkAnswer(selected)?"✓ 正解！":"次の発見につなげよう。正解："+q.getOptions().get(q.getCorrectIndex()))+"\n\n"+q.getExplanation(),17,true);
+            button("正解の項目を読む",()->article(q.getOptions().get(q.getCorrectIndex())),false);
+            button(index+1==questions.size()?"結果を見る":"次の問題へ",()-> {
+                index++;answered=false;selected=-1;render();
             }
+            ,true);
         }
     }
-    
-    private void nextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.size()) {
-            displayQuestion(currentQuestionIndex);
-            startTimer();
-        } else {
-            finishQuiz();
-        }
+    private void answer(int n) {
+        if(answered)return;
+        selected=n;
+        answered=true;
+        if(questions.get(index).checkAnswer(n))score++;
+        render();
     }
-    
-    private void finishQuiz() {
-        // 結果を表示
-        QuizResultDialog dialog = new QuizResultDialog(this, score, questions.size() * 10);
-        dialog.show();
-        
-        // ユーザープログレスを保存
-        saveQuizResult();
-    }
-    
-    private void saveQuizResult() {
-        // SharedPreferencesに結果を保存
+    @Override protected void onSaveInstanceState(Bundle b) {
+        super.onSaveInstanceState(b);
+        b.putString("questions",new Gson().toJson(questions));
+        b.putInt("index",index);
+        b.putInt("score",score);
+        b.putBoolean("answered",answered);
+        b.putInt("selected",selected);
     }
 }
