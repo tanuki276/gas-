@@ -25,6 +25,8 @@ import java.util.List;
 
 public class LearningActivity extends AppCompatActivity {
     private TextView tvProgress;
+    private RecyclerView recyclerView;
+    private Button btnStartSession;
     private HistoryData historyData;
     private String region;
 
@@ -33,24 +35,29 @@ public class LearningActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learning);
         region = JsonLoader.normalizeRegion(getIntent().getStringExtra("region"));
-        historyData = JsonLoader.loadHistoryData(this, JsonLoader.getRegionFileName(region));
         initUI();
         updateProgressText();
-        if (historyData != null) setupLearningTopics();
-        else Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
+        btnStartSession.setEnabled(false);
+
+        JsonLoader.loadHistoryDataAsync(this, JsonLoader.getRegionFileName(region), data -> {
+            if (isFinishing() || isDestroyed()) return;
+            historyData = data;
+            if (data != null && data.getPeriods() != null) {
+                recyclerView.setAdapter(new TopicAdapter(data.getPeriods()));
+                btnStartSession.setEnabled(!data.getPeriods().isEmpty());
+            } else {
+                Toast.makeText(this, "歴史データの読み込みに失敗しました", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initUI() {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
         tvProgress = findViewById(R.id.tv_progress);
-        Button btnStartSession = findViewById(R.id.btn_start_session);
+        btnStartSession = findViewById(R.id.btn_start_session);
         btnStartSession.setOnClickListener(v -> startLearningSession());
-    }
-
-    private void setupLearningTopics() {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(new TopicAdapter(historyData.getPeriods()));
     }
 
     private void startLearningSession() {
