@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.historymaster.R;
 import com.example.historymaster.data.JsonLoader;
 import com.example.historymaster.data.QuizGenerator;
-import com.example.historymaster.models.HistoryData;
 import com.example.historymaster.models.QuizQuestion;
 import com.example.historymaster.utils.SharedPrefsHelper;
 
@@ -122,6 +121,8 @@ public class QuizActivity extends AppCompatActivity {
         if (correct) {
             score += 10;
             tvScore.setText(String.valueOf(score));
+        } else {
+            SharedPrefsHelper.addReviewItem(this, q.getQuestion(), answerFor(q));
         }
 
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
@@ -131,11 +132,19 @@ public class QuizActivity extends AppCompatActivity {
             ((RadioButton) radioGroup.getChildAt(q.getCorrectIndex())).setTextColor(getColor(R.color.correct_answer));
         }
 
-        String message = timeout ? "時間切れです" : (correct ? "正解です" : "不正解です");
+        String message = timeout ? "時間切れです・復習に追加しました" :
+            (correct ? "正解です" : "不正解・復習に追加しました");
         if (q.getExplanation() != null) message += "\n" + q.getExplanation();
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         btnSubmit.setEnabled(false);
         btnNext.setEnabled(true);
+    }
+
+    private String answerFor(QuizQuestion q) {
+        if (q.getExplanation() != null && !q.getExplanation().trim().isEmpty()) return q.getExplanation();
+        int index = q.getCorrectIndex();
+        if (index >= 0 && index < q.getOptions().size()) return q.getOptions().get(index);
+        return "解説を確認してください";
     }
 
     private void nextQuestion() {
@@ -152,11 +161,14 @@ public class QuizActivity extends AppCompatActivity {
     private void finishQuiz() {
         if (timer != null) timer.cancel();
         SharedPrefsHelper.saveQuizScore(this, region, score);
+        int earnedXp = Math.max(5, (score / 10) * 2);
+        int xp = SharedPrefsHelper.addXp(this, earnedXp);
         int max = questions.size() * 10;
         int best = SharedPrefsHelper.getQuizScore(this, region);
         new AlertDialog.Builder(this)
-            .setTitle("クイズ結果")
-            .setMessage(score + " / " + max + "点\nベストスコア: " + best + "点")
+            .setTitle("クイズ完了 +" + earnedXp + " XP")
+            .setMessage(score + " / " + max + "点\nベスト: " + best + "点\n合計XP: " + xp +
+                "\n復習待ち: " + SharedPrefsHelper.getDueReviewCount(this) + "件")
             .setPositiveButton("終了", (d, w) -> finish())
             .setCancelable(false)
             .show();
