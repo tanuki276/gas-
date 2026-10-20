@@ -37,7 +37,7 @@ public class QuizActivity extends AppCompatActivity {
             JsonLoader.getRegionFileName(region));
         
         if (data != null) {
-            questions = QuizGenerator.generateQuiz(data, 10);
+            questions = QuizGenerator.generateQuiz(data, 30);
         }
         
         initUI();

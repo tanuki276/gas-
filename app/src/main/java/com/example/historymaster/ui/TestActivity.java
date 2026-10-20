@@ -32,7 +32,7 @@ public class TestActivity extends AppCompatActivity {
         
         if (data != null) {
             // テスト用により多くの問題を生成
-            testQuestions = QuizGenerator.generateQuiz(data, 20);
+            testQuestions = QuizGenerator.generateQuiz(data, 50);
         }
         
         initUI();
