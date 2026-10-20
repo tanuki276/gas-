@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.historymaster.R;
 import com.example.historymaster.data.JsonLoader;
 import com.example.historymaster.models.HistoryData;
+import com.example.historymaster.models.Entity;
 import com.example.historymaster.models.Period;
 import java.util.List;
 
