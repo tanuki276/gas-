@@ -1,23 +1,60 @@
 package com.example.historymaster.ui;
+
+import android.content.Intent;
 import android.os.Bundle;
-import com.example.historymaster.models.Entity;
-import com.example.historymaster.utils.SharedPrefsHelper;
-public class LearningActivity extends Screen  {
-    @Override public void onCreate(Bundle b) {
-        super.onCreate(b);
+import android.widget.LinearLayout;
+import com.example.historymaster.design.Palette;
+import com.example.historymaster.learning.*;
+
+public class LearningActivity extends Screen {
+  private Lesson lesson;
+
+  @Override
+  public void onCreate(Bundle state) {
+    super.onCreate(state);
+    lesson = LessonRepository.find(this, getIntent().getStringExtra("lesson"));
+    if (lesson == null) {
+      page("レッスンが見つかりません", null);
+      button("地域の解説を読む", () -> open(ExplanationActivity.class), true);
+      return;
     }
-    @Override protected void onResume() {
-        super.onResume();
-        page("自分のペースで学ぶ","解説を読み終えたら「読了」をタップ。進捗は端末に保存されます。");
-        if(!ready())return;
-        java.util.List<Entity> all=entities();
-        int count=0;
-        for(Entity e:all)if(SharedPrefsHelper.isRead(this,region,e.getName()))count++;
-        text(count+" / "+all.size()+" 項目を読了",24,true);
-        android.widget.ProgressBar bar=new android.widget.ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
-        bar.setMax(all.size());
-        bar.setProgress(count);
-        body.addView(bar);
-        for(Entity e:all)button((SharedPrefsHelper.isRead(this,region,e.getName())?"✓ 読了  ":"読む  ")+e.getName(),()->article(e.getName()),false);
+    region = lesson.region;
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (lesson != null) render();
+  }
+
+  private void render() {
+    page(lesson.title, lesson.subtitle + "  /  ミニレッスン");
+    LinearLayout header = card(Palette.LAVENDER);
+    label(header, "まずは、3つの発見。", 23, Palette.INK, true);
+    label(header, "読み終えたら3問に挑戦。2問以上正解でクリアできます。", 15, Palette.MUTED, false);
+    int n = 1;
+    for (Lesson.Fact fact : lesson.facts) {
+      LinearLayout item = card(Palette.WHITE);
+      label(item, "DISCOVERY 0" + n++, 12, Palette.PRIMARY, true);
+      label(item, fact.answer, 23, Palette.INK, true);
+      label(item, fact.note, 16, Palette.MUTED, false);
     }
+    button(
+        ProgressStore.session(this, lesson.id) == null ? "わかった！ 3問に挑戦" : "途中のクイズを再開",
+        () -> {
+          Intent intent = new Intent(this, QuizActivity.class);
+          intent.putExtra("region", region);
+          intent.putExtra("lesson", lesson.id);
+          startActivity(intent);
+        },
+        true);
+    button("Wikipediaでもっと詳しく", () -> article(lesson.sourceTitle), false);
+    text(
+        "出典：日本語版Wikipedia「"
+            + lesson.sourceTitle
+            + "」。基本的な事実を学習用に短く構成しています。記事の投稿者と編集履歴は出典画面から確認できます。",
+        12,
+        false);
+    text("初回の完了で20 XP＋正解1問につき5 XP。同じレッスンのXP獲得は1日1回です。", 12, false);
+  }
 }

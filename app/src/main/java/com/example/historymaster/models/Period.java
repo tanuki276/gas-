@@ -4,31 +4,31 @@ package com.example.historymaster.models;
 import java.util.List;
 
 public class Period {
-    private String upper_level;
-    private List<Entity> middle_level_entities;
+  private String upper_level;
+  private List<Entity> middle_level_entities;
 
-    public Period() {}
+  public Period() {}
 
-    public Period(String upper_level, List<Entity> middle_level_entities) {
-        this.upper_level = upper_level;
-        this.middle_level_entities = middle_level_entities;
-    }
+  public Period(String upper_level, List<Entity> middle_level_entities) {
+    this.upper_level = upper_level;
+    this.middle_level_entities = middle_level_entities;
+  }
 
-    // ゲッター
-    public String getUpperLevel() {
-        return upper_level;
-    }
+  // ゲッター
+  public String getUpperLevel() {
+    return upper_level;
+  }
 
-    public List<Entity> getMiddleLevelEntities() {
-        return middle_level_entities;
-    }
+  public List<Entity> getMiddleLevelEntities() {
+    return middle_level_entities;
+  }
 
-    // セッター
-    public void setUpperLevel(String upper_level) {
-        this.upper_level = upper_level;
-    }
+  // セッター
+  public void setUpperLevel(String upper_level) {
+    this.upper_level = upper_level;
+  }
 
-    public void setMiddleLevelEntities(List<Entity> middle_level_entities) {
-        this.middle_level_entities = middle_level_entities;
-    }
+  public void setMiddleLevelEntities(List<Entity> middle_level_entities) {
+    this.middle_level_entities = middle_level_entities;
+  }
 }
