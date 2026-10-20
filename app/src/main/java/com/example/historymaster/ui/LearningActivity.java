@@ -51,7 +51,9 @@ public class LearningActivity extends AppCompatActivity {
     
     private void startLearningSession() {
         // 学習セッションを開始
-        LearningSessionDialog dialog = new LearningSessionDialog(this, historyData);
-        dialog.show();
+        if (historyData == null) return;
+        android.content.Intent intent = new android.content.Intent(this, ExplanationActivity.class);
+        intent.putExtra("region", getIntent().getStringExtra("region"));
+        startActivity(intent);
     }
 }

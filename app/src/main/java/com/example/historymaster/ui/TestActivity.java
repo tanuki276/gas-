@@ -32,7 +32,7 @@ public class TestActivity extends AppCompatActivity {
         
         if (data != null) {
             // テスト用により多くの問題を生成
-            testQuestions = QuizGenerator.generateQuiz(data, 20);
+            testQuestions = QuizGenerator.generateQuiz(data, 50);
         }
         
         initUI();
@@ -130,7 +130,11 @@ public class TestActivity extends AppCompatActivity {
     
     private void finishTest() {
         // 結果を表示
-        TestResultDialog dialog = new TestResultDialog(this, testScore, testQuestions.size() * 5);
-        dialog.show();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("テスト結果")
+                .setMessage(testScore + " / " + (testQuestions.size() * 5) + "点")
+                .setPositiveButton("終了", (dialog, which) -> finish())
+                .setOnCancelListener(dialog -> finish())
+                .show();
     }
 }

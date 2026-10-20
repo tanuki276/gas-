@@ -37,7 +37,7 @@ public class QuizActivity extends AppCompatActivity {
             JsonLoader.getRegionFileName(region));
         
         if (data != null) {
-            questions = QuizGenerator.generateQuiz(data, 10);
+            questions = QuizGenerator.generateQuiz(data, 30);
         }
         
         initUI();
@@ -154,8 +154,12 @@ public class QuizActivity extends AppCompatActivity {
     
     private void finishQuiz() {
         // 結果を表示
-        QuizResultDialog dialog = new QuizResultDialog(this, score, questions.size() * 10);
-        dialog.show();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("クイズ結果")
+                .setMessage(score + " / " + (questions.size() * 10) + "点")
+                .setPositiveButton("終了", (dialog, which) -> finish())
+                .setOnCancelListener(dialog -> finish())
+                .show();
         
         // ユーザープログレスを保存
         saveQuizResult();
