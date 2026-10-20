@@ -61,7 +61,9 @@ public class JipainsFlowTest {
         Robolectric.buildActivity(QuizActivity.class, intent).setup()) {
       QuizActivity activity = controller.get();
       capture(activity, "question");
-      for (String answer : new String[] {"平城京", "710年", "元明天皇"}) {
+      Lesson lesson = LessonRepository.find(app, "japan:nara");
+      for (int i = 0; i < lesson.facts.size(); i++) {
+        String answer = lesson.facts.get(i).answer;
         clickEnding(activity, answer);
         click(activity, "答え合わせ");
         assertNotNull(find(activity.getWindow().getDecorView(), "✓  その通り！"));
@@ -70,15 +72,15 @@ public class JipainsFlowTest {
           controller.recreate();
           activity = controller.get();
         }
-        click(activity, answer.equals("元明天皇") ? "レッスンを完了する" : "次の発見へ  →");
+        click(activity, i == lesson.facts.size() - 1 ? "レッスンを完了する" : "次の発見へ  →");
       }
-      assertEquals(35, ProgressStore.load(app).xp);
+      assertEquals(20 + lesson.facts.size() * 5, ProgressStore.load(app).xp);
       assertTrue(ProgressStore.load(app).mastered.contains("japan:nara"));
       capture(activity, "completed");
       assertEquals(0, activity.scroll.getScrollY());
       controller.recreate();
       activity = controller.get();
-      assertEquals(35, ProgressStore.load(app).xp);
+      assertEquals(20 + lesson.facts.size() * 5, ProgressStore.load(app).xp);
       click(activity, "コースへ戻る");
       controller.pause().stop();
       assertNull(ProgressStore.session(app, "japan:nara"));

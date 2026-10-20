@@ -88,7 +88,7 @@ public class MainActivity extends Screen {
     LinearLayout hero = card(Palette.LAVENDER);
     mascot(hero, 112, false);
     label(hero, "ジピと、歴史の冒険へ。", 23, Palette.INK, true);
-    label(hero, "読む → 3問に挑戦 → 発見を自分のものに。", 14, Palette.MUTED, false);
+    label(hero, "読む → クイズに挑戦 → 発見を自分のものに。", 14, Palette.MUTED, false);
     List<Lesson> lessons = LessonRepository.region(this, region);
     if (lessons.isEmpty()) {
       text("コースを読み込めませんでした。図鑑から記事を探せます。", 16, false);
@@ -118,7 +118,7 @@ public class MainActivity extends Screen {
         Palette.MUTED,
         false);
     text(Regions.name(region) + "の冒険コース", 23, true);
-    text("2つのレッスンとまとめ。3問中2問の正解で次へ進めます。", 14, false);
+    text("2つのレッスンとまとめ。各レッスンで3分の2以上正解すると次へ進めます。", 14, false);
     boolean unlocked = true;
     for (int i = 0; i < lessons.size(); i++) {
       Lesson lesson = lessons.get(i);
@@ -130,7 +130,7 @@ public class MainActivity extends Screen {
           12,
           done ? Palette.GREEN : Palette.PRIMARY,
           true);
-      label(node, lesson.title, 21, Palette.INK, true);
+      label(node, lesson.title + " · " + lesson.facts.size() + "問", 21, Palette.INK, true);
       Button start =
           action(
               node,
@@ -148,7 +148,9 @@ public class MainActivity extends Screen {
     boolean checkpointOpen = state.mastered.containsAll(ids(lessons));
     LinearLayout checkpoint = card(Palette.LAVENDER);
     label(checkpoint, "★  CHECKPOINT", 13, Palette.PRIMARY, true);
-    label(checkpoint, "冒険のまとめ · 6問", 21, Palette.INK, true);
+    int totalQuestions = 0;
+    for (Lesson lesson : lessons) totalQuestions += lesson.facts.size();
+    label(checkpoint, "冒険のまとめ · " + totalQuestions + "問", 21, Palette.INK, true);
     Button finish =
         action(
             checkpoint,

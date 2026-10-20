@@ -30,17 +30,19 @@ public class LearningActivity extends Screen {
   private void render() {
     page(lesson.title, lesson.subtitle + "  /  ミニレッスン");
     LinearLayout header = card(Palette.LAVENDER);
-    label(header, "まずは、3つの発見。", 23, Palette.INK, true);
-    label(header, "読み終えたら3問に挑戦。2問以上正解でクリアできます。", 15, Palette.MUTED, false);
+    int count = lesson.facts.size();
+    int passCount = (count * 2 + 2) / 3;
+    label(header, "まずは、" + count + "の発見。", 23, Palette.INK, true);
+    label(header, "読み終えたら" + count + "問に挑戦。" + passCount + "問以上正解でクリアできます。", 15, Palette.MUTED, false);
     int n = 1;
     for (Lesson.Fact fact : lesson.facts) {
       LinearLayout item = card(Palette.WHITE);
-      label(item, "DISCOVERY 0" + n++, 12, Palette.PRIMARY, true);
+      label(item, "DISCOVERY " + n++, 12, Palette.PRIMARY, true);
       label(item, fact.answer, 23, Palette.INK, true);
       label(item, fact.note, 16, Palette.MUTED, false);
     }
     button(
-        ProgressStore.session(this, lesson.id) == null ? "わかった！ 3問に挑戦" : "途中のクイズを再開",
+        ProgressStore.session(this, lesson.id) == null ? "わかった！ " + count + "問に挑戦" : "途中のクイズを再開",
         () -> {
           Intent intent = new Intent(this, QuizActivity.class);
           intent.putExtra("region", region);
