@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- アプリ名と基本情報 -->
-    <string name="app_name">歴史マスター</string>
+    <string name="app_name">Jipains</string>
     <string name="app_slogan">東アジアの歴史を楽しく学ぼう</string>
     
     <!-- 地域名 -->

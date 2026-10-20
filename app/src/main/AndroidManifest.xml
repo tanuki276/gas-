@@ -7,15 +7,16 @@
     
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_jipains"
         android:label="@string/app_name"
         android:theme="@style/Theme.HistoryMaster"
         android:supportsRtl="true">
         
+        <activity android:name=".ui.SettingsActivity" android:exported="false" />
+        <activity android:name=".ui.ArticleActivity" android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,28 +25,23 @@
         
         <activity
             android:name=".ui.ExplanationActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         
         <activity
             android:name=".ui.QuizActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         
         <activity
             android:name=".ui.LearningActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         
         <activity
             android:name=".ui.SearchActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         
         <activity
             android:name=".ui.TestActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         
     </application>
     

@@ -1,101 +1,49 @@
 package com.example.historymaster.ui;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import androidx.annotation.NonNull;
 import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.historymaster.R;
-import com.example.historymaster.data.JsonLoader;
-import com.example.historymaster.models.HistoryData;
-import com.example.historymaster.models.Period;
-import java.util.List;
+import android.widget.LinearLayout;
+import com.example.historymaster.data.Regions;
+import com.example.historymaster.design.Palette;
+import com.example.historymaster.models.*;
 
-public class ExplanationActivity extends AppCompatActivity {
-    
-    private RecyclerView recyclerView;
-    private TextView tvRegionName;
-    private HistoryData historyData;
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explanation);
-        
-        String region = getIntent().getStringExtra("region");
-        
-        // データ読み込み
-        historyData = JsonLoader.loadHistoryData(this, 
-            JsonLoader.getRegionFileName(region));
-        
-        initUI();
-        
-        if (historyData != null) {
-            displayData();
-        }
+public class ExplanationActivity extends Screen {
+  @Override
+  public void onCreate(Bundle state) {
+    super.onCreate(state);
+    page(Regions.name(region) + "の歴史図鑑", "時代をひらいて、国・王朝・出来事を探しましょう。");
+    button("まずは歴史の概説を読む", () -> article(Regions.ARTICLES[Regions.index(region)]), true);
+    if (!ready()) return;
+    text("教材の分類・関連語は既存の資料に基づきます。各項目の詳しい説明と出典はWikipediaで確認できます。", 13, false);
+    for (Period period : data.getPeriods()) {
+      LinearLayout section = card(Palette.WHITE);
+      final LinearLayout list = new LinearLayout(this);
+      list.setOrientation(LinearLayout.VERTICAL);
+      list.setVisibility(android.view.View.GONE);
+      action(
+          section,
+          "＋  " + period.getUpperLevel(),
+          () -> {
+            if (list.getChildCount() == 0) show(list, period.getMiddleLevelEntities(), 0);
+            boolean expanded = list.getVisibility() == android.view.View.VISIBLE;
+            list.setVisibility(expanded ? android.view.View.GONE : android.view.View.VISIBLE);
+          },
+          false);
+      section.addView(list);
     }
-    
-    private void initUI() {
-        tvRegionName = findViewById(R.id.tv_region_name);
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+  }
+
+  private void show(LinearLayout parent, java.util.List<Entity> entities, int depth) {
+    if (entities == null) return;
+    for (Entity entity : entities) {
+      action(
+          parent,
+          (depth > 0 ? "↳  " : "") + entity.getName(),
+          () -> article(entity.getName()),
+          false);
+      if (entity.getTags() != null)
+        label(
+            parent, android.text.TextUtils.join(" · ", entity.getTags()), 12, Palette.MUTED, false);
+      show(parent, entity.getSubEntities(), depth + 1);
     }
-    
-    private void displayData() {
-        tvRegionName.setText(historyData.getRegionName());
-        
-        // アダプター設定
-        PeriodAdapter adapter = new PeriodAdapter(historyData.getPeriods());
-        recyclerView.setAdapter(adapter);
-    }
-    
-    // アダプタークラス
-    class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.ViewHolder> {
-        private List<Period> periods;
-        
-        public PeriodAdapter(List<Period> periods) {
-            this.periods = periods;
-        }
-        
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_period, parent, false);
-            return new ViewHolder(view);
-        }
-        
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Period period = periods.get(position);
-            holder.tvPeriodName.setText(period.getUpperLevel());
-            
-            // エンティティを表示
-            StringBuilder entitiesText = new StringBuilder();
-            for (Entity entity : period.getMiddleLevelEntities()) {
-                entitiesText.append("・").append(entity.getName()).append("\n");
-            }
-            holder.tvEntities.setText(entitiesText.toString());
-        }
-        
-        @Override
-        public int getItemCount() {
-            return periods.size();
-        }
-        
-        class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvPeriodName;
-            TextView tvEntities;
-            
-            ViewHolder(View itemView) {
-                super(itemView);
-                tvPeriodName = itemView.findViewById(R.id.tv_period_name);
-                tvEntities = itemView.findViewById(R.id.tv_entities);
-            }
-        }
-    }
+  }
 }

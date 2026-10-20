@@ -2,34 +2,58 @@ package com.example.historymaster.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.example.historymaster.learning.ProgressStore;
+import java.util.*;
 
-public class SharedPrefsHelper {
-    
-    private static final String PREFS_NAME = "HistoryMasterPrefs";
-    private static final String KEY_CURRENT_REGION = "current_region";
-    private static final String KEY_QUIZ_SCORES = "quiz_scores";
-    private static final String KEY_LEARNING_PROGRESS = "learning_progress";
-    
-    public static void saveCurrentRegion(Context context, String region) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        prefs.edit().putString(KEY_CURRENT_REGION, region).apply();
-    }
-    
-    public static String getCurrentRegion(Context context, String defaultValue) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(KEY_CURRENT_REGION, defaultValue);
-    }
-    
-    public static void saveQuizScore(Context context, String region, int score) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String scores = prefs.getString(KEY_QUIZ_SCORES, "{}");
-        // JSON形式で保存
-        // 実際にはGsonなどでオブジェクトを保存
-    }
-    
-    public static int getQuizScore(Context context, String region) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        // スコアを取得
-        return 0;
-    }
+public final class SharedPrefsHelper {
+  private static SharedPreferences prefs(Context c) {
+    return c.getSharedPreferences("HistoryMasterPrefs", Context.MODE_PRIVATE);
+  }
+
+  public static void saveCurrentRegion(Context c, String r) {
+    prefs(c).edit().putString("current_region", r).apply();
+  }
+
+  public static String getCurrentRegion(Context c, String fallback) {
+    return prefs(c).getString("current_region", fallback);
+  }
+
+  public static void saveQuizScore(Context c, String r, int score) {
+    prefs(c).edit().putInt("best_" + r, Math.max(score, getQuizScore(c, r))).apply();
+  }
+
+  public static int getQuizScore(Context c, String r) {
+    return prefs(c).getInt("best_" + r, 0);
+  }
+
+  public static boolean isRead(Context c, String r, String title) {
+    return prefs(c).getStringSet("read_" + r, Collections.emptySet()).contains(title);
+  }
+
+  public static int readCount(Context c, String r) {
+    return prefs(c).getStringSet("read_" + r, Collections.emptySet()).size();
+  }
+
+  public static synchronized int markRead(Context c, String r, String title) {
+    Set<String> read = new HashSet<>(prefs(c).getStringSet("read_" + r, Collections.emptySet()));
+    if (!read.add(title)) return 0;
+    int earned = ProgressStore.read(c, r + "\u001f" + title);
+    prefs(c).edit().putStringSet("read_" + r, read).apply();
+    return earned;
+  }
+
+  public static Set<String> favorites(Context c) {
+    return new HashSet<>(prefs(c).getStringSet("favorites", Collections.emptySet()));
+  }
+
+  public static boolean favorite(Context c, String r, String title) {
+    return favorites(c).contains(r + "\u001f" + title);
+  }
+
+  public static void toggleFavorite(Context c, String r, String title) {
+    Set<String> favorites = favorites(c);
+    String key = r + "\u001f" + title;
+    if (!favorites.remove(key)) favorites.add(key);
+    prefs(c).edit().putStringSet("favorites", favorites).apply();
+  }
 }
